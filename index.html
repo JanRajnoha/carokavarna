@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Čarokavárna — Kde každý šálek skrývá kouzlo</title>
+  <meta name="description" content="Čarokavárna — magická kavárna v Brně. Výběrová káva, kouřící lektvary, magické dortíky a kotlík se suchým ledem.">
+  <meta name="theme-color" content="#070D06">
+  <link rel="icon" type="image/png" href="assets/img/logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Jost:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="is-loading">
+
+  <canvas class="sparkle-canvas" aria-hidden="true"></canvas>
+  <div class="scroll-progress" aria-hidden="true"></div>
+
+  <!-- ===== Navigation ===== -->
+  <header class="nav" id="top">
+    <a class="nav__logo logo" href="#top" aria-label="Čarokavárna — domů">
+      <img src="assets/img/logo.png" alt="">
+    </a>
+    <nav class="nav__links" id="nav-links" aria-label="Hlavní navigace">
+      <a href="#o-nas" data-i18n="nav.about">O nás</a>
+      <a href="#menu" data-i18n="nav.menu">Menu</a>
+      <a href="#galerie" data-i18n="nav.gallery">Galerie</a>
+      <a href="#kontakt" data-i18n="nav.branches">Kontakt</a>
+      <a href="#rezervace" data-i18n="nav.reservation">Rezervace</a>
+      <a href="#instagram">Instagram</a>
+    </nav>
+    <button class="nav__lang" type="button" data-lang-toggle aria-label="Switch language">EN</button>
+    <button class="nav__burger" type="button" aria-controls="nav-links" aria-expanded="false" aria-label="Menu">
+      <span></span><span></span>
+    </button>
+  </header>
+
+  <main>
+    <!-- ===== Hero ===== -->
+    <section class="hero">
+      <div class="hero__glow hero__glow--1"></div>
+      <div class="hero__glow hero__glow--2"></div>
+      <div class="hero__glow hero__glow--3"></div>
+      <canvas class="hero__dust" aria-hidden="true"></canvas>
+
+      <div class="hero__content">
+        <div class="hero__logo logo">
+          <img src="assets/img/logo.png" alt="Čaro kavárna">
+        </div>
+        <h1 class="hero__title">
+          <em data-i18n="hero.line1">Kde každý šálek</em>
+          <span data-i18n="hero.line2">skrývá kouzlo</span>
+        </h1>
+        <p class="hero__sub"><span aria-hidden="true">✦</span> Brno · <span data-i18n="hero.tag">Magická kavárna</span> <span aria-hidden="true">✦</span></p>
+        <a class="btn btn--outline hero__cta" href="#o-nas" data-i18n="hero.cta">Vstupte do světa kouzel</a>
+      </div>
+
+      <a class="hero__scroll" href="#o-nas" aria-label="Posunout dolů">
+        <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="M8 2v11M3 8l5 5 5-5" fill="none" stroke="currentColor" stroke-width="1.2"/></svg>
+      </a>
+    </section>
+
+    <!-- ===== O nás ===== -->
+    <section class="section section--about" id="o-nas">
+      <div class="container about">
+        <div class="about__text">
+          <h2 class="title reveal">
+            <em>Čarokavárna</em><br>
+            <span data-i18n-html="about.title">— místo, kde<br>magie ožívá</span>
+          </h2>
+          <p class="lead reveal" data-i18n="about.p1">Čarokavárna je místo, kde se pohádkové světy setkávají s vůní čerstvé kávy. Naše kavárna v Brně je plná magie — od kouřících kotlíků se suchým ledem, přes tajemné lektvary servírované v lektvarnicích, až po dortíky z jiného světa.</p>
+          <p class="lead reveal" data-i18n="about.p2">Inspirováni světy čar a kouzel, nabízíme zážitek pro celou rodinu — kouzlo, které si odnesete v srdci. Přijďte se přesvědčit sami.</p>
+          <ul class="chips reveal">
+            <li class="chip"><span aria-hidden="true">🔮</span> <span data-i18n="chip.coffee">Výběrová káva</span></li>
+            <li class="chip"><span aria-hidden="true">🧪</span> <span data-i18n="chip.potions">Kouřící lektvary</span></li>
+            <li class="chip"><span aria-hidden="true">🍰</span> <span data-i18n="chip.cakes">Magické dortíky</span></li>
+            <li class="chip"><span aria-hidden="true">🧙</span> <span data-i18n="chip.products">Licencované produkty</span></li>
+          </ul>
+        </div>
+        <figure class="about__photo framed reveal">
+          <img src="assets/img/interier.jpg" alt="Interiér Čarokavárny — kulatý stolek pod lampou, stěny plné obrazů" loading="lazy">
+        </figure>
+      </div>
+    </section>
+
+    <!-- ===== Menu ===== -->
+    <section class="section section--menu" id="menu">
+      <div class="container">
+        <h2 class="title reveal"><em>Menu</em></h2>
+
+        <div class="tabs reveal" role="tablist" aria-label="Kategorie menu"></div>
+        <div class="menu-panel" id="menu-panel" role="tabpanel" aria-live="polite"></div>
+
+        <p class="menu-note reveal" data-i18n="menu.note">Menu se může měnit dle denní nabídky. Rádi vám poradíme přímo na místě.</p>
+      </div>
+    </section>
+
+    <!-- ===== Galerie ===== -->
+    <section class="section section--gallery" id="galerie">
+      <div class="container">
+        <h2 class="title reveal"><em data-i18n="gallery.title1">Nahlédněte</em> <span data-i18n="gallery.title2">dovnitř</span></h2>
+
+        <div class="gallery">
+          <figure class="gallery__item gallery__item--tall reveal">
+            <img src="assets/img/horka-cokolada.jpg" alt="Horká čokoláda se šlehačkou a jiskrami" loading="lazy">
+            <figcaption data-i18n="gallery.c1">Horká čokoláda</figcaption>
+          </figure>
+          <figure class="gallery__item gallery__item--wide reveal">
+            <img src="assets/img/lektvary.jpg" alt="Lektvary v baňkách obklopené kouřem ze suchého ledu" loading="lazy">
+            <figcaption data-i18n="gallery.c2">Kouřící lektvary</figcaption>
+          </figure>
+          <figure class="gallery__item gallery__item--wide reveal">
+            <img src="assets/img/interier.jpg" alt="Interiér kavárny se stěnou plnou obrazů" loading="lazy">
+            <figcaption data-i18n="gallery.c3">Interiér</figcaption>
+          </figure>
+          <figure class="gallery__item gallery__item--tall reveal">
+            <img src="assets/img/menu-kniha.jpg" alt="Menu ve formě staré knihy kouzel" loading="lazy">
+            <figcaption data-i18n="gallery.c4">Naše menu</figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Kontakt ===== -->
+    <section class="section section--branches" id="kontakt">
+      <div class="container">
+        <h2 class="title reveal"><em data-i18n="branches.title">Kde nás najdete</em></h2>
+
+        <div class="branches">
+          <article class="branch branch--wide reveal">
+            <div class="branch__map">
+              <iframe title="Mapa — Čarokavárna Brno" src="https://maps.google.com/maps?q=%C4%8Carokav%C3%A1rna%20Brno&z=15&output=embed" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+            </div>
+            <div class="branch__body">
+              <div class="branch__head">
+                <span class="logo logo--sm logo--glow"><img src="assets/img/logo.png" alt=""></span>
+                <h3>Brno</h3>
+              </div>
+              <p class="branch__area" data-i18n="branches.brnoArea">Centrum Brna</p>
+              <div class="divider" aria-hidden="true"><span>✦</span></div>
+              <dl class="hours">
+                <dt data-i18n="days.tueSun">Út – Ne</dt><dd>9:45 – 20:00</dd>
+                <dt data-i18n="days.mon">Pondělí</dt><dd data-i18n="days.closed">Zavřeno</dd>
+              </dl>
+              <a class="link-arrow" href="https://www.google.com/maps/search/?api=1&query=%C4%8Carokav%C3%A1rna%20Brno" target="_blank" rel="noopener" data-i18n="branches.map">Zobrazit na mapě →</a>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Rezervace ===== -->
+    <section class="section section--reservation" id="rezervace">
+      <div class="container center">
+        <h2 class="title reveal"><em data-i18n="res.title">Rezervace</em></h2>
+        <p class="lead lead--muted reveal" data-i18n="res.text">Stůl si zarezervujete jednoduše přes náš rezervační systém CRM Cloud Cash. Pár kliků a místo je vaše.</p>
+        <div class="res-buttons reveal">
+          <!-- TODO: doplnit odkazy na rezervační systém CRM Cloud Cash -->
+          <a class="btn btn--fill" href="#" data-i18n="res.book">Rezervovat stůl</a>
+        </div>
+        <p class="res-note reveal" data-i18n="res.note">Rezervace jsou spravovány přes CRM Cloud Cash</p>
+      </div>
+    </section>
+
+    <!-- ===== Instagram ===== -->
+    <!-- Live feed: paste your Behold JSON feed URL into data-behold-feed (e.g. https://feeds.behold.so/XXXXXXXX).
+         Until then — or if the feed can't load — the static photos below are shown. -->
+    <section class="section section--instagram" id="instagram" data-behold-feed="">
+      <div class="container center">
+        <h2 class="title reveal"><em>Instagram</em></h2>
+
+        <div class="ig">
+          <div class="ig__col reveal">
+            <p class="ig__handle">@carokavarna_brno</p>
+            <div class="ig__grid" data-ig-grid>
+              <a href="https://www.instagram.com/carokavarna_brno/" target="_blank" rel="noopener"><img src="assets/img/horka-cokolada.jpg" alt="Horká čokoláda" loading="lazy"></a>
+              <a href="https://www.instagram.com/carokavarna_brno/" target="_blank" rel="noopener"><img src="assets/img/interier.jpg" alt="Interiér kavárny" loading="lazy"></a>
+              <a href="https://www.instagram.com/carokavarna_brno/" target="_blank" rel="noopener"><img src="assets/img/lektvary.jpg" alt="Kouřící lektvary" loading="lazy"></a>
+              <a href="https://www.instagram.com/carokavarna_brno/" target="_blank" rel="noopener"><img src="assets/img/menu-kniha.jpg" alt="Menu jako kniha kouzel" loading="lazy"></a>
+              <a href="https://www.instagram.com/carokavarna_brno/" target="_blank" rel="noopener"><img src="assets/img/kotlik.jpg" alt="Magický kotlík" loading="lazy"></a>
+              <a href="https://www.instagram.com/carokavarna_brno/" target="_blank" rel="noopener"><img src="assets/img/horka-cokolada.jpg" alt="Horká čokoláda" loading="lazy"></a>
+            </div>
+            <a class="link-arrow" href="https://www.instagram.com/carokavarna_brno/" target="_blank" rel="noopener" data-i18n="ig.follow">Sledovat na Instagramu →</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ===== Footer ===== -->
+  <footer class="footer">
+    <a class="logo logo--md" href="#top" aria-label="Nahoru"><img src="assets/img/logo.png" alt=""></a>
+    <nav class="footer__links" aria-label="Patička">
+      <a href="#o-nas" data-i18n="nav.about">O nás</a>
+      <a href="#menu" data-i18n="nav.menu">Menu</a>
+      <a href="#galerie" data-i18n="nav.gallery">Galerie</a>
+      <a href="#kontakt" data-i18n="nav.branches">Kontakt</a>
+      <a href="#rezervace" data-i18n="nav.reservation">Rezervace</a>
+    </nav>
+    <div class="footer__social">
+      <a href="https://www.instagram.com/carokavarna_brno/" target="_blank" rel="noopener" aria-label="Instagram">
+        <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg>
+      </a>
+    </div>
+    <p class="footer__copy">© <span data-year>2026</span> Čarokavárna · <span data-i18n="footer.made">Vytvořeno s kouzlem</span> · Brno</p>
+  </footer>
+
+  <script src="js/main.js"></script>
+</body>
+</html>

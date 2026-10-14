@@ -69,6 +69,18 @@ figure { margin: 0; }
 }
 .title em { font-style: italic; }
 
+/* Clicking a title casts a spell on it: a glow flares up and it swells for a moment */
+.title, .hero__title { cursor: pointer; }
+.title { transform-origin: left center; }
+.center .title { transform-origin: center; }
+.title.is-enchanted { animation: enchant 1.4s var(--ease); }
+.hero__title.is-enchanted { animation: shimmer 9s linear infinite, enchant 1.4s var(--ease); }
+@keyframes enchant {
+  0%   { filter: drop-shadow(0 0 0 rgb(241 242 233 / 0)); transform: none; }
+  25%  { filter: drop-shadow(0 0 12px rgb(241 242 233 / .75)) drop-shadow(0 0 30px rgb(224 224 209 / .35)); transform: scale(1.03); }
+  100% { filter: drop-shadow(0 0 0 rgb(241 242 233 / 0)); transform: none; }
+}
+
 .lead {
   margin: 0 0 22px;
   font-size: 1.125rem;
@@ -101,18 +113,56 @@ figure { margin: 0; }
   isolation: isolate;
   transition: color .45s var(--ease), box-shadow .45s var(--ease);
 }
+/* Hover = a spell: a flowing head of light glides left → right, the fill growing continuously behind it.
+   Layers (top first): a soft cone of light fanning back from the head, a glow inside the head,
+   then the fill itself, brightening towards the head. The mask gives a rounded, feathered head. */
 .btn::before {
   content: "";
   position: absolute;
-  inset: 0;
+  top: -2px; bottom: -2px; left: -2px;
+  width: calc(100% + 80px);       /* the head overshoots, so the finished fill covers the whole button */
   z-index: -1;
-  background: var(--c-accent);
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform .5s var(--ease);
+  background:
+    conic-gradient(from 230deg at calc(100% - 30px) 50%,
+      rgb(241 242 233 / 0) 0deg, rgb(241 242 233 / .6) 40deg, rgb(241 242 233 / 0) 80deg 360deg),
+    radial-gradient(56px 28px at calc(100% - 40px) 50%, var(--c-paper), rgb(241 242 233 / 0) 72%),
+    linear-gradient(90deg, var(--c-accent) 0, var(--c-accent) calc(100% - 170px), var(--c-paper) calc(100% - 44px));
+  -webkit-mask:
+    linear-gradient(#000 0 0) left / calc(100% - 44px) 100% no-repeat,
+    radial-gradient(44px 62% at calc(100% - 44px) 50%, #000 52%, rgb(0 0 0 / 0) 100%) no-repeat;
+  mask:
+    linear-gradient(#000 0 0) left / calc(100% - 44px) 100% no-repeat,
+    radial-gradient(44px 62% at calc(100% - 44px) 50%, #000 52%, rgb(0 0 0 / 0) 100%) no-repeat;
+  transform: translateX(-100%);
+  transition: transform 1.2s cubic-bezier(.45, .05, .3, 1);
 }
-.btn:hover, .btn:focus-visible { color: var(--c-ink); box-shadow: 0 0 28px rgb(224 224 209 / .25); }
-.btn:hover::before, .btn:focus-visible::before { transform: scaleX(1); }
+/* …while a glint of light runs around the border */
+@property --spell-angle { syntax: "<angle>"; inherits: false; initial-value: 0deg; }
+.btn::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  padding: 1.5px;
+  pointer-events: none;
+  background: conic-gradient(from var(--spell-angle), transparent 0 62%, rgb(241 242 233 / .9) 80%, transparent 92%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+  opacity: 0;
+  transition: opacity .4s;
+}
+.btn:hover, .btn:focus-visible {
+  color: var(--c-ink);
+  transition: color .35s var(--ease) .5s, box-shadow .45s var(--ease);
+  animation: btn-aura 2.2s ease-in-out infinite;
+}
+.btn:hover::before, .btn:focus-visible::before { transform: translateX(0); }
+.btn:hover::after, .btn:focus-visible::after { opacity: 1; animation: spell-orbit 1.6s linear infinite; }
+@keyframes spell-orbit { to { --spell-angle: 360deg; } }
+@keyframes btn-aura {
+  0%, 100% { box-shadow: 0 0 22px rgb(224 224 209 / .25), 0 0 2px rgb(241 242 233 / .6); }
+  50%      { box-shadow: 0 0 46px rgb(224 224 209 / .45), 0 0 90px rgb(224 224 209 / .15), 0 0 2px rgb(241 242 233 / .8); }
+}
 
 .link-arrow {
   display: inline-block;
@@ -250,8 +300,10 @@ figure { margin: 0; }
   width: 200px;
   margin-bottom: 40px;
 }
+.hero__logo { cursor: pointer; }
 .hero__logo img {
   position: relative;
+  z-index: 1;
   filter: drop-shadow(0 0 14px rgb(224 224 209 / .3));
 }
 /* soft round halo behind the logo — animates only opacity/transform */
@@ -268,6 +320,58 @@ figure { margin: 0; }
   0%, 100% { opacity: .7; transform: scale(.95); }
   50%      { opacity: 1;  transform: scale(1.05); }
 }
+
+/* Magic circle behind the logo */
+.hero__circle {
+  position: absolute;
+  left: -60%; top: -60%;
+  width: 220%; height: 220%;
+  overflow: visible;
+  pointer-events: none;
+  transition: opacity 1.6s var(--ease) .3s, transform 1.8s var(--ease) .3s;
+}
+.hero__circle g { transform-box: view-box; transform-origin: center; }
+.mc-line, .mc-ticks, .mc-arc, .mc-dots { fill: none; stroke: var(--c-mist); }
+.mc-line  { stroke-width: 1;   opacity: .2; }
+.mc-ticks { stroke-width: 7;   opacity: .22; stroke-dasharray: 1 23.35; }                    /* 48 ticks  */
+.mc-arc   { stroke-width: 1.2; opacity: .3;  stroke-dasharray: 150 120.2; }                  /* 4 arcs    */
+.mc-dots  { stroke-width: 2.2; opacity: .35; stroke-dasharray: 0 12.41; stroke-linecap: round; } /* 80 dots */
+.hero__circle use { fill: var(--c-mist); opacity: .55; }
+.mc-outer { animation: spin 120s linear infinite; }
+.mc-arcs  { animation: spin 70s linear infinite reverse; }
+.mc-inner { animation: spin 160s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.is-loading .hero__circle { opacity: 0; transform: scale(.75) rotate(-40deg); }
+
+/* Clicking the logo "casts" — the circle flares and whirls once */
+.hero__circle.is-casting { animation: cast 1.4s var(--ease); }
+@keyframes cast {
+  0%   { transform: none; }
+  35%  { transform: scale(1.14) rotate(140deg); filter: drop-shadow(0 0 10px rgb(224 224 209 / .6)); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Dry-ice fog drifting along the bottom of the hero (seamless loop: tile = 50% of a 200% strip) */
+.hero__fog {
+  position: absolute;
+  left: 0; bottom: -6%;
+  width: 200%; height: 42%;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 18% 42% at 10% 72%, rgb(224 224 209 / .075), transparent 70%),
+    radial-gradient(ellipse 24% 38% at 36% 82%, rgb(224 224 209 / .06), transparent 70%),
+    radial-gradient(ellipse 16% 48% at 61% 76%, rgb(224 224 209 / .07), transparent 70%),
+    radial-gradient(ellipse 22% 40% at 86% 84%, rgb(224 224 209 / .055), transparent 70%);
+  background-size: 50% 100%;
+  background-repeat: repeat-x;
+  filter: blur(18px);
+  will-change: transform;
+  animation: fog-drift 70s linear infinite;
+}
+.hero__fog--2 { bottom: -12%; height: 36%; opacity: .8; animation-duration: 110s; animation-direction: reverse; }
+@keyframes fog-drift { to { transform: translateX(-50%); } }
 
 .hero__title {
   margin: 0;
@@ -331,8 +435,111 @@ figure { margin: 0; }
 .section--instagram { background: var(--c-ink); }
 
 /* Reveal on scroll */
-.reveal { opacity: 0; transform: translateY(28px); transition: opacity .9s var(--ease), transform .9s var(--ease); }
-.reveal.is-visible { opacity: 1; transform: none; }
+.reveal {
+  opacity: 0;
+  transform: translateY(80px);
+  filter: blur(8px);
+  transition: opacity 1.8s var(--ease), transform 2.4s var(--ease), filter 2.2s var(--ease);
+  transition-delay: var(--d, 0s);
+}
+.reveal.is-visible { opacity: 1; transform: none; filter: none; }
+
+/* Containers whose children rise one by one (chips, Instagram tiles) */
+.reveal--stagger, .reveal--stagger.is-visible { opacity: 1; transform: none; filter: none; }
+.reveal--stagger > * {
+  opacity: 0;
+  transform: translateY(60px);
+  filter: blur(8px);
+  transition: opacity 1.8s var(--ease), transform 2.4s var(--ease), filter 2.2s var(--ease);
+  transition-delay: calc(var(--d, 0s) + var(--n, 0) * .15s);
+}
+.reveal--stagger > :nth-child(2) { --n: 1; }
+.reveal--stagger > :nth-child(3) { --n: 2; }
+.reveal--stagger > :nth-child(4) { --n: 3; }
+.reveal--stagger > :nth-child(5) { --n: 4; }
+.reveal--stagger > :nth-child(n+6) { --n: 5; }
+.reveal--stagger.is-visible > * { opacity: 1; transform: none; filter: none; }
+/* Section titles condense out of a magical blur */
+.title.reveal { filter: blur(12px); }
+.title.reveal.is-visible { filter: none; }
+
+/* Clouds: content rises out of a mist bank that parts and dissolves (layers added by JS).
+   Four layers: left + right banks part sideways, a dense middle bank sinks, high wisps drift up. */
+.section { overflow-x: clip; }   /* drifting clouds must not cause sideways scroll */
+.clouds {
+  position: absolute;
+  left: -10%; right: -10%; top: 0; bottom: 0;
+  z-index: 3;
+  pointer-events: none;
+}
+.cloud {
+  position: absolute;
+  inset: 0;
+  filter: blur(28px);
+  transition: transform 3.8s var(--ease), opacity 3.2s var(--ease), visibility 0s 4.5s;
+}
+.cloud--l {
+  background:
+    radial-gradient(ellipse 22% 30% at 8% 80%,  rgb(224 224 209 / .30), transparent 70%),
+    radial-gradient(ellipse 20% 26% at 26% 92%, rgb(224 224 209 / .28), transparent 70%),
+    radial-gradient(ellipse 18% 24% at 40% 74%, rgb(224 224 209 / .24),  transparent 70%),
+    radial-gradient(ellipse 16% 22% at 14% 56%, rgb(224 224 209 / .22), transparent 70%),
+    radial-gradient(ellipse 14% 18% at 32% 46%, rgb(224 224 209 / .18), transparent 70%),
+    radial-gradient(ellipse 12% 16% at 5% 32%,  rgb(224 224 209 / .16), transparent 70%);
+}
+.cloud--r {
+  background:
+    radial-gradient(ellipse 22% 30% at 92% 80%, rgb(224 224 209 / .30), transparent 70%),
+    radial-gradient(ellipse 20% 26% at 74% 92%, rgb(224 224 209 / .28), transparent 70%),
+    radial-gradient(ellipse 18% 24% at 60% 74%, rgb(224 224 209 / .24),  transparent 70%),
+    radial-gradient(ellipse 16% 22% at 86% 56%, rgb(224 224 209 / .22), transparent 70%),
+    radial-gradient(ellipse 14% 18% at 68% 46%, rgb(224 224 209 / .18), transparent 70%),
+    radial-gradient(ellipse 12% 16% at 95% 32%, rgb(224 224 209 / .16), transparent 70%);
+}
+.cloud--c {
+  background:
+    radial-gradient(ellipse 26% 26% at 50% 92%, rgb(224 224 209 / .30), transparent 70%),
+    radial-gradient(ellipse 20% 22% at 38% 80%, rgb(224 224 209 / .24),  transparent 70%),
+    radial-gradient(ellipse 20% 22% at 62% 80%, rgb(224 224 209 / .24),  transparent 70%),
+    radial-gradient(ellipse 18% 20% at 50% 64%, rgb(224 224 209 / .20), transparent 70%),
+    radial-gradient(ellipse 14% 16% at 44% 46%, rgb(224 224 209 / .16), transparent 70%);
+}
+.cloud--high {
+  filter: blur(16px);
+  transition: transform 3s var(--ease), opacity 2.4s var(--ease), visibility 0s 3.5s;
+  background:
+    radial-gradient(ellipse 24% 6% at 22% 22%, rgb(224 224 209 / .13), transparent 70%),
+    radial-gradient(ellipse 20% 5% at 70% 14%, rgb(224 224 209 / .11), transparent 70%),
+    radial-gradient(ellipse 18% 5% at 48% 34%, rgb(224 224 209 / .1),  transparent 70%),
+    radial-gradient(ellipse 16% 4% at 86% 38%, rgb(224 224 209 / .09), transparent 70%),
+    radial-gradient(ellipse 14% 4% at 12% 8%,  rgb(224 224 209 / .08), transparent 70%);
+}
+.cloud--floor {                 /* thick fog floor along the bottom */
+  background:
+    radial-gradient(ellipse 30% 22% at 15% 100%, rgb(224 224 209 / .3),  transparent 70%),
+    radial-gradient(ellipse 30% 22% at 50% 100%, rgb(224 224 209 / .32), transparent 70%),
+    radial-gradient(ellipse 30% 22% at 85% 100%, rgb(224 224 209 / .3),  transparent 70%),
+    radial-gradient(ellipse 24% 18% at 32% 88%,  rgb(224 224 209 / .22), transparent 70%),
+    radial-gradient(ellipse 24% 18% at 68% 88%,  rgb(224 224 209 / .22), transparent 70%);
+}
+.cloud--mid {                   /* scattered puffs through the middle and top */
+  filter: blur(22px);
+  background:
+    radial-gradient(ellipse 12% 12% at 20% 30%, rgb(224 224 209 / .15), transparent 70%),
+    radial-gradient(ellipse 10% 10% at 58% 22%, rgb(224 224 209 / .13), transparent 70%),
+    radial-gradient(ellipse 12% 11% at 80% 60%, rgb(224 224 209 / .16), transparent 70%),
+    radial-gradient(ellipse 11% 10% at 36% 62%, rgb(224 224 209 / .15), transparent 70%),
+    radial-gradient(ellipse 9% 9% at 66% 40%,   rgb(224 224 209 / .13), transparent 70%),
+    radial-gradient(ellipse 10% 9% at 8% 70%,   rgb(224 224 209 / .14), transparent 70%),
+    radial-gradient(ellipse 9% 8% at 92% 20%,   rgb(224 224 209 / .11), transparent 70%);
+}
+.section.is-risen .cloud { opacity: 0; visibility: hidden; }
+.section.is-risen .cloud--floor { transform: translateY(40%) scale(1.2); }
+.section.is-risen .cloud--mid   { transform: scale(1.5); }
+.section.is-risen .cloud--l    { transform: translate(-35%, 8%) scale(1.25); }
+.section.is-risen .cloud--r    { transform: translate(35%, 8%) scale(1.25); }
+.section.is-risen .cloud--c    { transform: translateY(30%) scale(1.3); transition-duration: 4.2s, 3.6s, 0s; transition-delay: 0s, 0s, 4.8s; }
+.section.is-risen .cloud--high { transform: translate(8%, -25%) scale(1.15); }
 
 /* ---------- About ---------- */
 
@@ -346,16 +553,16 @@ figure { margin: 0; }
 
 .chips { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 34px; }
 .chip {
+  display: inline-block;
   padding: 10px 18px;
   font: 400 .8125rem/1.2 var(--f-ui);
   letter-spacing: .12em;
   text-transform: uppercase;
   color: var(--c-text-muted);
   border: 1px solid var(--c-line);
-  transition: color .3s, border-color .3s, box-shadow .3s;
-  cursor: default;
+  transition: color .3s, border-color .3s, box-shadow .3s, transform .3s var(--ease);
 }
-.chip:hover { color: var(--c-accent-hi); border-color: var(--c-accent); box-shadow: 0 0 18px rgb(224 224 209 / .15); }
+.chip:hover, .chip:focus-visible { color: var(--c-accent-hi); border-color: var(--c-accent); box-shadow: 0 0 18px rgb(224 224 209 / .15); transform: translateY(-2px); }
 
 .framed { position: relative; }
 .framed::after {
@@ -415,12 +622,45 @@ figure { margin: 0; }
   border: 1px solid var(--c-line);
   min-height: 100%;
   opacity: 0;
-  transform: translateY(14px);
-  animation: card-in .6s var(--ease) forwards;
+  animation: card-in .7s var(--ease) forwards;
   transition: border-color .35s, transform .35s var(--ease), box-shadow .35s;
 }
+.menu-card { animation-delay: calc(var(--i, 0) * .06s); }
 .menu-card:hover { border-color: var(--c-accent-dim); box-shadow: 0 10px 30px rgb(7 13 6 / .6); }
-@keyframes card-in { to { opacity: 1; transform: none; } }
+.menu-panel.rise-pending .menu-card { animation: none; opacity: 0; }
+.menu-panel.rise-in .menu-card {
+  animation: card-rise 2.4s var(--ease) forwards;
+  animation-delay: calc(var(--i, 0) * .15s + .3s);
+}
+@keyframes card-rise {
+  from { opacity: 0; transform: translateY(80px); filter: blur(8px); }
+  to   { opacity: 1; transform: none; filter: none; }
+}
+/* cards materialise out of mist… */
+@keyframes card-in {
+  from { opacity: 0; transform: translateY(14px) scale(.98); filter: blur(8px); }
+  to   { opacity: 1; transform: none; filter: none; }
+}
+/* …and dissolve when switching tabs */
+.menu-panel.is-leaving .menu-card { animation: card-out .26s ease-in forwards; animation-delay: 0s !important; }
+@keyframes card-out {
+  from { opacity: 1; transform: none; filter: none; }
+  to   { opacity: 0; transform: translateY(-8px) scale(.97); filter: blur(8px); }
+}
+
+/* Soft light that follows the cursor over cards */
+.menu-card, .branch { position: relative; }
+.menu-card::before, .branch::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity .4s;
+  background: radial-gradient(280px circle at var(--mx, 50%) var(--my, 50%), rgb(224 224 209 / .09), transparent 65%);
+}
+.menu-card:hover::before, .branch:hover::before { opacity: 1; }
 
 .menu-card h3 {
   margin: 0 0 12px;
@@ -476,7 +716,8 @@ figure { margin: 0; }
   position: relative;
   overflow: hidden;
   border: 1px solid transparent;
-  transition: border-color .4s, opacity .9s var(--ease), transform .9s var(--ease);
+  transition: border-color .4s, opacity 1.8s var(--ease), transform 2.4s var(--ease), filter 2.2s var(--ease);
+  transition-delay: 0s, var(--d, 0s), var(--d, 0s), var(--d, 0s);
   cursor: zoom-in;
 }
 .gallery__item img {
@@ -529,7 +770,17 @@ figure { margin: 0; }
   cursor: zoom-out;
 }
 .lightbox.is-open { opacity: 1; pointer-events: auto; }
-.lightbox img { max-height: 86vh; width: auto; border: 1px solid var(--c-accent-dim); }
+.lightbox img {
+  max-height: 86vh;
+  width: auto;
+  border: 1px solid var(--c-accent-dim);
+  opacity: 0;
+  transform: scale(.9);
+  filter: blur(12px);
+  transition: opacity .5s var(--ease), transform .7s var(--ease), filter .7s var(--ease);
+}
+.lightbox.is-open img { opacity: 1; transform: none; filter: none; }
+
 
 /* ---------- Branches ---------- */
 
@@ -541,7 +792,8 @@ figure { margin: 0; }
 .branch {
   background: var(--c-card);
   border: 1px solid var(--c-line);
-  transition: border-color .4s, opacity .9s var(--ease), transform .9s var(--ease);
+  transition: border-color .4s, opacity 1.8s var(--ease), transform 2.4s var(--ease), filter 2.2s var(--ease);
+  transition-delay: 0s, var(--d, 0s), var(--d, 0s), var(--d, 0s);
 }
 .branch:hover { border-color: var(--c-accent-dim); }
 
@@ -751,6 +1003,6 @@ figure { margin: 0; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition-duration: .01ms !important; }
   html { scroll-behavior: auto; }
-  .reveal { opacity: 1; transform: none; }
+  .reveal, .title.reveal, .reveal--stagger > * { opacity: 1; transform: none; filter: none; }
   .menu-card { opacity: 1; transform: none; }
 }

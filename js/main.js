@@ -144,7 +144,7 @@
             <p>${esc(text)}</p>
             <p class="perk">${esc(perk)}</p>
           </article>
-          <article class="menu-card menu-card--photo" style="animation-delay:.08s">
+          <article class="menu-card menu-card--photo" style="--i:1">
             <img src="${cat.feature.photo}" alt="" loading="lazy">
             <p>${esc(cat.feature.caption[lang])}</p>
           </article>
@@ -155,7 +155,7 @@
     panelEl.innerHTML = `<div class="menu-grid">${cat.items.map((item, i) => {
       const [name, desc] = item[lang];
       return `
-        <article class="menu-card" style="animation-delay:${i * 0.06}s">
+        <article class="menu-card" style="--i:${i}">
           <h3>${esc(name)}</h3>
           <p>${esc(desc)}</p>
           <p class="price">${esc(pick(item.price))}</p>
@@ -163,15 +163,28 @@
     }).join("")}</div>`;
   }
 
+  // Switch tab: old cards dissolve, then the new ones materialise (see card-out / card-in in CSS)
+  let tabSwitch = 0;
+  function selectTab(id, animate = true) {
+    if (id === activeTab || !MENU.some(c => c.id === id)) return;
+    activeTab = id;
+    renderTabs();
+    panelEl.classList.remove("rise-in");
+    const token = ++tabSwitch;
+    if (!animate || reduceMotion) { renderMenu(); return; }
+    panelEl.classList.add("is-leaving");
+    setTimeout(() => {
+      if (token !== tabSwitch) return;           // a newer switch took over
+      panelEl.classList.remove("is-leaving");
+      renderMenu();
+    }, 260);
+  }
+
   tabsEl.addEventListener("click", e => {
     const btn = e.target.closest("[data-tab]");
     if (!btn || btn.dataset.tab === activeTab) return;
-    activeTab = btn.dataset.tab;
-    renderTabs();
-    renderMenu();
+    selectTab(btn.dataset.tab);
     tabsEl.querySelector(`[data-tab="${activeTab}"]`).focus();
-    const r = btn.getBoundingClientRect();
-    burst(r.left + r.width / 2, r.top + r.height / 2, 14);
   });
 
   tabsEl.addEventListener("keydown", e => {
@@ -194,6 +207,8 @@
     const max = document.documentElement.scrollHeight - window.innerHeight;
     nav.classList.toggle("is-scrolled", y > 40);
     progress.style.transform = `scaleX(${max > 0 ? y / max : 0})`;
+    // back in the hero → no section is "current"
+    if (y < window.innerHeight * 0.5) navLinks.forEach(a => a.classList.remove("is-active"));
   }
   window.addEventListener("scroll", onScroll, { passive: true });
   onScroll();
@@ -220,22 +235,37 @@
   /* ---------------------------------------------------------
      Reveal on scroll
      --------------------------------------------------------- */
-  const revealObserver = new IntersectionObserver(entries => {
-    entries.forEach(entry => {
-      if (!entry.isIntersecting) return;
-      entry.target.classList.add("is-visible");
-      revealObserver.unobserve(entry.target);
+  // Every .reveal element (texts, photos, cards…) rises out of the mist — but only once the
+  // clouds of its section have parted (.is-risen). Elements that become ready together rise
+  // one after another (delay fed to CSS via --d).
+  const inView = new Set();
+  const sectionOf = el => el.closest("main .section");
+
+  function revealBatch(items) {
+    items.sort((a, b) => (a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING ? -1 : 1));
+    items.forEach((el, k) => {
+      revealObserver.unobserve(el);
+      inView.delete(el);
+      el.style.setProperty("--d", `${Math.min(k, 8) * 0.18}s`);
+      el.classList.add("is-visible");
+      setTimeout(() => el.style.removeProperty("--d"), 3200 + k * 180);   // so later hovers aren't delayed
     });
+  }
+
+  const revealObserver = new IntersectionObserver(entries => {
+    const ready = [];
+    entries.forEach(entry => {
+      if (!entry.isIntersecting) { inView.delete(entry.target); return; }
+      inView.add(entry.target);
+      const section = sectionOf(entry.target);
+      if (reduceMotion || !section || section.classList.contains("is-risen")) ready.push(entry.target);
+    });
+    if (ready.length) revealBatch(ready);
   }, { threshold: 0.12, rootMargin: "0px 0px -40px 0px" });
-  document.querySelectorAll(".reveal").forEach(el => {
-    // small stagger for siblings revealed together; cleared afterwards so hover effects aren't delayed
-    const sibIndex = [...el.parentElement.children].filter(c => c.classList.contains("reveal")).indexOf(el);
-    if (sibIndex > 0) {
-      el.style.transitionDelay = `${Math.min(sibIndex, 4) * 0.08}s`;
-      el.addEventListener("transitionend", () => { el.style.transitionDelay = ""; }, { once: true });
-    }
-    revealObserver.observe(el);
-  });
+  document.querySelectorAll(".reveal").forEach(el => revealObserver.observe(el));
+
+  // Menu cards wait hidden until the menu section rises (see .rise-pending / .rise-in in CSS)
+  if (!reduceMotion) panelEl.classList.add("rise-pending");
 
   /* ---------------------------------------------------------
      Gallery lightbox
@@ -255,6 +285,7 @@
       lbImg.src = img.src;
       lbImg.alt = img.alt;
       lightbox.classList.add("is-open");
+      setTimeout(() => { castRing(innerWidth / 2, innerHeight / 2, 1.8); burst(innerWidth / 2, innerHeight / 2, 18); }, 120);
     };
     item.addEventListener("click", open);
     item.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); open(); } });
@@ -351,6 +382,13 @@
     for (let i = 0; i < n; i++) addSpark(x, y, 2.2);
   }
 
+  // An expanding ring of light — the "spell" shockwave
+  function castRing(x, y, power = 1) {
+    if (reduceMotion) return;
+    sparks.push({ ring: true, x, y, r: 2, vr: 3.4 * power, life: 1, decay: 0.022 });
+    if (!sparkLoop) { sparkLoop = true; requestAnimationFrame(drawSparks); }
+  }
+
   function drawStar(x, y, r) {
     sctx.beginPath();
     sctx.moveTo(x, y - r * 2.2);
@@ -366,9 +404,18 @@
     sparks = sparks.filter(s => s.life > 0);
     sctx.shadowColor = "rgba(241, 242, 233, .85)";
     for (const s of sparks) {
-      s.x += s.vx; s.y += s.vy; s.vy = s.vy * 0.95 - 0.004; s.vx *= 0.95;
       s.life -= s.decay;
       const a = Math.max(s.life, 0);
+      if (s.ring) {
+        s.r += s.vr; s.vr *= 0.96;
+        sctx.globalAlpha = a * 0.7;
+        sctx.shadowBlur = 12 * a;
+        sctx.strokeStyle = "#E0E0D1";
+        sctx.lineWidth = 0.4 + 1.6 * a;
+        sctx.beginPath(); sctx.arc(s.x, s.y, s.r, 0, Math.PI * 2); sctx.stroke();
+        continue;
+      }
+      s.x += s.vx; s.y += s.vy; s.vy = s.vy * 0.95 - 0.004; s.vx *= 0.95;
       sctx.globalAlpha = a;
       sctx.shadowBlur = 6 * a;
       sctx.fillStyle = s.star ? "#F1F2E9" : "#E0E0D1";
@@ -495,8 +542,130 @@
   };
 
   /* ---------------------------------------------------------
+     Magic interactions
+     --------------------------------------------------------- */
+
+  // Click / tap anywhere → ring of light + sparkles (keyboard "clicks" have detail 0 and are skipped)
+  document.addEventListener("click", e => {
+    if (!e.detail) return;
+    castRing(e.clientX, e.clientY);
+    burst(e.clientX, e.clientY, 12);
+  });
+
+  // Soft light following the cursor over cards (position fed to CSS via --mx / --my)
+  if (!reduceMotion) {
+    document.addEventListener("pointermove", e => {
+      const card = e.target.closest && e.target.closest(".menu-card, .branch");
+      if (!card) return;
+      const r = card.getBoundingClientRect();
+      card.style.setProperty("--mx", `${e.clientX - r.left}px`);
+      card.style.setProperty("--my", `${e.clientY - r.top}px`);
+    }, { passive: true });
+  }
+
+  // Clicking the hero logo casts a big spell: the circle whirls, rings ripple out
+  const heroCircle = document.querySelector(".hero__circle");
+  heroLogo.addEventListener("click", () => {
+    const r = heroLogo.getBoundingClientRect();
+    const cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+    burst(cx, cy, 50);
+    [0, 180, 360].forEach(d => setTimeout(() => castRing(cx, cy, 1.7), d));
+    if (heroCircle && !reduceMotion) {
+      heroCircle.classList.remove("is-casting");
+      heroCircle.getBoundingClientRect();         // restart the animation
+      heroCircle.classList.add("is-casting");
+    }
+  });
+  if (heroCircle) heroCircle.addEventListener("animationend", e => {
+    if (e.animationName === "cast") heroCircle.classList.remove("is-casting");
+  });
+
+  // Buttons: while hovered, sparks keep drifting off the border like a spell being held
+  document.querySelectorAll(".btn").forEach(btn => {
+    let timer = null;
+    btn.addEventListener("pointerenter", e => {
+      if (e.pointerType !== "mouse" || reduceMotion) return;
+      clearInterval(timer);
+      const start = performance.now();
+      timer = setInterval(() => {
+        const r = btn.getBoundingClientRect();
+        // while the arrow flies, sparks stream off its tip (position read from the live transform)
+        const tx = new DOMMatrixReadOnly(getComputedStyle(btn, "::before").transform).m41;
+        const tipX = r.left - 2 + btn.clientWidth + 68 + tx;          // front of the rounded head
+        if (tipX < r.right && performance.now() - start < 1600) {
+          for (let k = 0; k < 3; k++) addSpark(tipX, r.top + r.height / 2 + (Math.random() - 0.5) * r.height * 0.6, 0.5);
+          return;
+        }
+        let d = Math.random() * 2 * (r.width + r.height), x, y;   // then: random point on the perimeter
+        if (d < r.width) { x = r.left + d; y = r.top; }
+        else if ((d -= r.width) < r.height) { x = r.right; y = r.top + d; }
+        else if ((d -= r.height) < r.width) { x = r.right - d; y = r.bottom; }
+        else { x = r.left; y = r.bottom - (d - r.width); }
+        addSpark(x, y, 0.35);
+      }, 40);
+    });
+    btn.addEventListener("pointerleave", () => { clearInterval(timer); timer = null; });
+  });
+
+  // Titles: clicking one traces a sparkling arc over the words, ending in a burst, and the title glows
+  function enchantTitle(title) {
+    title.classList.remove("is-enchanted");
+    title.getBoundingClientRect();                 // restart the glow animation
+    title.classList.add("is-enchanted");
+    if (reduceMotion) return;
+    const range = document.createRange();
+    range.selectNodeContents(title);
+    const b = range.getBoundingClientRect();       // the words themselves, not the full-width block
+    const steps = 28, duration = 700;
+    for (let i = 0; i <= steps; i++) {
+      setTimeout(() => {
+        const t = i / steps;
+        const x = b.left + t * b.width;
+        const y = b.top + b.height * 0.45 - Math.sin(t * Math.PI) * (b.height * 0.55 + 14);
+        for (let k = 0; k < 3; k++) addSpark(x, y, 0.9);
+        if (i === steps) { burst(x, y, 26); castRing(x, y, 1.3); }
+      }, (i / steps) * duration);
+    }
+  }
+  document.querySelectorAll(".title, .hero__title").forEach(title => {
+    title.addEventListener("click", () => enchantTitle(title));
+    title.addEventListener("animationend", e => { if (e.animationName === "enchant") title.classList.remove("is-enchanted"); });
+  });
+
+  // Chips in "O nás" link to #menu — open the matching tab before the smooth scroll arrives
+  document.querySelectorAll("[data-open-tab]").forEach(link =>
+    link.addEventListener("click", () => selectTab(link.dataset.openTab, false)));
+
+  // Sections rise up out of a bank of clouds: each section gets a cloud layer that
+  // parts and dissolves the first time the section scrolls into view
+  if (!reduceMotion) {
+    const cloudObserver = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (!entry.isIntersecting) return;
+        const section = entry.target;
+        section.classList.add("is-risen");
+        cloudObserver.unobserve(section);
+        revealBatch([...inView].filter(el => section.contains(el)));
+        if (section.contains(panelEl) && panelEl.classList.contains("rise-pending")) {
+          panelEl.classList.replace("rise-pending", "rise-in");
+        }
+      });
+    }, { rootMargin: "0px 0px -30% 0px" });
+    document.querySelectorAll("main .section").forEach(section => {
+      const clouds = document.createElement("div");
+      clouds.className = "clouds";
+      clouds.setAttribute("aria-hidden", "true");
+      clouds.innerHTML = '<div class="cloud cloud--high"></div><div class="cloud cloud--mid"></div><div class="cloud cloud--l"></div><div class="cloud cloud--c"></div><div class="cloud cloud--r"></div><div class="cloud cloud--floor"></div>';
+      section.appendChild(clouds);
+      cloudObserver.observe(section);
+    });
+  }
+
+  /* ---------------------------------------------------------
      Init
      --------------------------------------------------------- */
+  // Start at the top on reload (the intro is built for it); #section links still open where they point
+  if ("scrollRestoration" in history) history.scrollRestoration = "manual";
   document.querySelectorAll("[data-year]").forEach(el => { el.textContent = new Date().getFullYear(); });
   applyLang();
   // Wait for webfonts (so layout is final) but never longer than ~0.8 s

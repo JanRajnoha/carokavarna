@@ -43,9 +43,36 @@
       <div class="hero__glow hero__glow--2"></div>
       <div class="hero__glow hero__glow--3"></div>
       <canvas class="hero__dust" aria-hidden="true"></canvas>
+      <div class="hero__fog" aria-hidden="true"></div>
+      <div class="hero__fog hero__fog--2" aria-hidden="true"></div>
 
       <div class="hero__content">
-        <div class="hero__logo logo">
+        <div class="hero__logo logo" title="Klikněte pro kouzlo ✦">
+          <!-- magic circle: rings, ticks, dotted orbit and stars — each layer rotates at its own pace -->
+          <svg class="hero__circle" viewBox="0 0 400 400" aria-hidden="true">
+            <defs>
+              <path id="mc-star" d="M0,-7 Q0,0 7,0 Q0,0 0,7 Q0,0 -7,0 Q0,0 0,-7Z"/>
+              <path id="mc-star-sm" d="M0,-4 Q0,0 4,0 Q0,0 0,4 Q0,0 -4,0 Q0,0 0,-4Z"/>
+            </defs>
+            <g class="mc-outer">
+              <circle class="mc-line" cx="200" cy="200" r="194"/>
+              <circle class="mc-ticks" cx="200" cy="200" r="186"/>
+            </g>
+            <g class="mc-arcs">
+              <circle class="mc-arc" cx="200" cy="200" r="172"/>
+            </g>
+            <g class="mc-inner">
+              <circle class="mc-dots" cx="200" cy="200" r="158"/>
+              <use href="#mc-star" x="200" y="42"/>
+              <use href="#mc-star" x="358" y="200"/>
+              <use href="#mc-star" x="200" y="358"/>
+              <use href="#mc-star" x="42" y="200"/>
+              <use href="#mc-star-sm" x="311.7" y="88.3"/>
+              <use href="#mc-star-sm" x="311.7" y="311.7"/>
+              <use href="#mc-star-sm" x="88.3" y="311.7"/>
+              <use href="#mc-star-sm" x="88.3" y="88.3"/>
+            </g>
+          </svg>
           <img src="assets/img/logo.png" alt="Čaro kavárna">
         </div>
         <h1 class="hero__title">
@@ -71,11 +98,12 @@
           </h2>
           <p class="lead reveal" data-i18n="about.p1">Čarokavárna je místo, kde se pohádkové světy setkávají s vůní čerstvé kávy. Naše kavárna v Brně je plná magie — od kouřících kotlíků se suchým ledem, přes tajemné lektvary servírované v lektvarnicích, až po dortíky z jiného světa.</p>
           <p class="lead reveal" data-i18n="about.p2">Inspirováni světy čar a kouzel, nabízíme zážitek pro celou rodinu — kouzlo, které si odnesete v srdci. Přijďte se přesvědčit sami.</p>
-          <ul class="chips reveal">
-            <li class="chip"><span aria-hidden="true">🔮</span> <span data-i18n="chip.coffee">Výběrová káva</span></li>
-            <li class="chip"><span aria-hidden="true">🧪</span> <span data-i18n="chip.potions">Kouřící lektvary</span></li>
-            <li class="chip"><span aria-hidden="true">🍰</span> <span data-i18n="chip.cakes">Magické dortíky</span></li>
-            <li class="chip"><span aria-hidden="true">🧙</span> <span data-i18n="chip.products">Licencované produkty</span></li>
+          <ul class="chips reveal reveal--stagger">
+            <!-- each chip opens the matching menu tab (data-open-tab) through the portal transition -->
+            <li><a class="chip" href="#menu" data-open-tab="kava"><span aria-hidden="true">🔮</span> <span data-i18n="chip.coffee">Výběrová káva</span></a></li>
+            <li><a class="chip" href="#menu" data-open-tab="kotlik"><span aria-hidden="true">🧪</span> <span data-i18n="chip.potions">Kouřící lektvary</span></a></li>
+            <li><a class="chip" href="#menu" data-open-tab="dortiky"><span aria-hidden="true">🍰</span> <span data-i18n="chip.cakes">Magické dortíky</span></a></li>
+            <li><a class="chip" href="#menu" data-open-tab="produkty"><span aria-hidden="true">🧙</span> <span data-i18n="chip.products">Licencované produkty</span></a></li>
           </ul>
         </div>
         <figure class="about__photo framed reveal">
@@ -171,9 +199,9 @@
         <h2 class="title reveal"><em>Instagram</em></h2>
 
         <div class="ig">
-          <div class="ig__col reveal">
-            <p class="ig__handle">@carokavarna_brno</p>
-            <div class="ig__grid" data-ig-grid>
+          <div class="ig__col">
+            <p class="ig__handle reveal">@carokavarna_brno</p>
+            <div class="ig__grid reveal reveal--stagger" data-ig-grid>
               <a href="https://www.instagram.com/carokavarna_brno/" target="_blank" rel="noopener"><img src="assets/img/horka-cokolada.jpg" alt="Horká čokoláda" loading="lazy"></a>
               <a href="https://www.instagram.com/carokavarna_brno/" target="_blank" rel="noopener"><img src="assets/img/interier.jpg" alt="Interiér kavárny" loading="lazy"></a>
               <a href="https://www.instagram.com/carokavarna_brno/" target="_blank" rel="noopener"><img src="assets/img/lektvary.jpg" alt="Kouřící lektvary" loading="lazy"></a>
@@ -181,7 +209,7 @@
               <a href="https://www.instagram.com/carokavarna_brno/" target="_blank" rel="noopener"><img src="assets/img/kotlik.jpg" alt="Magický kotlík" loading="lazy"></a>
               <a href="https://www.instagram.com/carokavarna_brno/" target="_blank" rel="noopener"><img src="assets/img/horka-cokolada.jpg" alt="Horká čokoláda" loading="lazy"></a>
             </div>
-            <a class="link-arrow" href="https://www.instagram.com/carokavarna_brno/" target="_blank" rel="noopener" data-i18n="ig.follow">Sledovat na Instagramu →</a>
+            <a class="link-arrow reveal" href="https://www.instagram.com/carokavarna_brno/" target="_blank" rel="noopener" data-i18n="ig.follow">Sledovat na Instagramu →</a>
           </div>
         </div>
       </div>

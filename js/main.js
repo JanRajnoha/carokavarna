@@ -580,6 +580,28 @@
     if (e.animationName === "cast") heroCircle.classList.remove("is-casting");
   });
 
+  // Clicking the cauldron makes the potion boil over; clicking the wand waves it and sparks fly off its tip
+  function playOnce(el, cls) {
+    el.classList.remove(cls);
+    el.getBoundingClientRect();                   // restart the animation
+    el.classList.add(cls);
+    setTimeout(() => el.classList.remove(cls), 1300);
+  }
+  const cauldron = document.querySelector(".about__cauldron");
+  if (cauldron) cauldron.addEventListener("click", () => {
+    const r = cauldron.getBoundingClientRect();
+    burst(r.left + r.width / 2, r.top + r.height * 0.4, 30);
+    if (!reduceMotion) playOnce(cauldron, "is-brewing");
+  });
+  const wand = document.querySelector(".res-wand");
+  if (wand) wand.addEventListener("click", () => {
+    const tip = wand.querySelector(".wd-tip").getBoundingClientRect();
+    const cx = tip.left + tip.width / 2, cy = tip.top + tip.height / 2;
+    burst(cx, cy, 36);
+    castRing(cx, cy, 1.2);
+    if (!reduceMotion) playOnce(wand, "is-waving");
+  });
+
   // Buttons: while hovered, sparks keep drifting off the border like a spell being held
   document.querySelectorAll(".btn").forEach(btn => {
     let timer = null;

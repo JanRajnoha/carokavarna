@@ -106,6 +106,139 @@
             <li><a class="chip" href="#menu" data-open-tab="produkty"><span aria-hidden="true">🧙</span> <span data-i18n="chip.products">Licencované produkty</span></a></li>
           </ul>
         </div>
+        <!-- bubbling cauldron, side view: a ladle stirs a glowing potion over green witch-fire.
+             Drawn back to front: glow → fire → back rim → potion → ladle → pot body → front rim → steam -->
+        <div class="about__cauldron reveal" title="Zamíchejte lektvarem ✦">
+          <svg class="cauldron" viewBox="0 0 200 264" role="img" aria-label="Bublající kotlík s lektvarem">
+            <defs>
+              <radialGradient id="cd-glow" cx="50%" cy="50%" r="50%">
+                <stop offset="0" stop-color="#B9D9A3" stop-opacity=".38"/>
+                <stop offset="1" stop-color="#B9D9A3" stop-opacity="0"/>
+              </radialGradient>
+              <linearGradient id="cd-potion" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#D6EEC2"/>
+                <stop offset="1" stop-color="#7FAE6A"/>
+              </linearGradient>
+              <linearGradient id="cd-iron" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0" stop-color="#0A1009"/>
+                <stop offset=".3" stop-color="#2A3826"/>
+                <stop offset=".55" stop-color="#151F12"/>
+                <stop offset="1" stop-color="#050805"/>
+              </linearGradient>
+              <linearGradient id="cd-flame" x1="0" y1="1" x2="0" y2="0">
+                <stop offset="0" stop-color="#F1F2E9"/>
+                <stop offset=".45" stop-color="#A9D18E"/>
+                <stop offset="1" stop-color="#637368" stop-opacity="0"/>
+              </linearGradient>
+              <radialGradient id="cd-steam" cx="50%" cy="50%" r="50%">
+                <stop offset="0" stop-color="#E0E0D1" stop-opacity=".55"/>
+                <stop offset="1" stop-color="#E0E0D1" stop-opacity="0"/>
+              </radialGradient>
+              <linearGradient id="cd-wood" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0" stop-color="#6B5134"/>
+                <stop offset=".5" stop-color="#A0805A"/>
+                <stop offset="1" stop-color="#5A4229"/>
+              </linearGradient>
+              <!-- hides the part of the ladle that is under the potion surface -->
+              <clipPath id="cd-above">
+                <rect x="-40" y="-140" width="80" height="140"/>
+              </clipPath>
+              <path id="cd-star" d="M0,-5 Q0,0 5,0 Q0,0 0,5 Q0,0 -5,0 Q0,0 0,-5Z"/>
+            </defs>
+
+            <ellipse class="cd-glow" cx="100" cy="120" rx="98" ry="92" fill="url(#cd-glow)"/>
+
+            <!-- fire behind the pot (only its glow and tips around the belly show) -->
+            <ellipse class="cd-fireglow" cx="100" cy="236" rx="60" ry="26" fill="url(#cd-glow)"/>
+            <g class="cd-fire">
+              <g transform="translate(70 250) scale(1.4 1.9)"><path class="cd-flame cd-flame--2" d="M0 0 C-12 0 -14 -12 -8 -22 C-5 -28 -2 -30 0 -40 C3 -30 6 -27 9 -20 C13 -11 11 0 0 0Z"/></g>
+              <g transform="translate(130 250) scale(1.4 1.9)"><path class="cd-flame cd-flame--3" d="M0 0 C-12 0 -14 -12 -8 -22 C-5 -28 -2 -30 0 -40 C3 -30 6 -27 9 -20 C13 -11 11 0 0 0Z"/></g>
+            </g>
+
+            <!-- back rim -->
+            <path class="cd-rim" d="M34 112 A66 12 0 0 1 166 112"/>
+
+            <!-- dark inner wall, then the potion sitting a little below the rim, with a swirl turning on it -->
+            <ellipse class="cd-inside" cx="100" cy="112" rx="63" ry="10.5"/>
+            <ellipse cx="100" cy="119" rx="57" ry="8" fill="url(#cd-potion)"/>
+            <ellipse class="cd-swirl" cx="100" cy="119" rx="40" ry="5.2"/>
+            <ellipse class="cd-swirl cd-swirl--2" cx="100" cy="119" rx="22" ry="3"/>
+
+            <!-- blobs swelling and popping on the surface -->
+            <g class="cd-blobs">
+              <circle class="cd-blob cd-blob--1" cx="70" cy="118" r="4.5"/>
+              <circle class="cd-blob cd-blob--2" cx="126" cy="120" r="3.6"/>
+              <circle class="cd-blob cd-blob--3" cx="96" cy="115" r="3.2"/>
+              <circle class="cd-blob cd-blob--4" cx="142" cy="117" r="2.8"/>
+            </g>
+
+            <!-- the ladle: x-swing and y-bob run a quarter beat apart, so its tip traces an ellipse -->
+            <g transform="translate(100 119)">
+              <g class="cd-stir-y">
+                <g class="cd-stir-x">
+                  <ellipse class="cd-ripple" cx="0" cy="0" rx="9" ry="2.4"/>
+                  <g clip-path="url(#cd-above)">
+                    <rect x="-3" y="-66" width="6" height="76" rx="3" fill="url(#cd-wood)"/>
+                    <circle cx="0" cy="-68" r="5" fill="#8A6A45"/>
+                  </g>
+                  <use class="cd-twinkle cd-twinkle--1" href="#cd-star" x="-12" y="-72"/>
+                  <use class="cd-twinkle cd-twinkle--2" href="#cd-star" x="11" y="-56"/>
+                </g>
+              </g>
+            </g>
+
+            <!-- pot body, legs and ear rings -->
+            <path class="cd-leg" d="M58 196 L48 240 L58 240 L72 202Z"/>
+            <path class="cd-leg" d="M142 196 L152 240 L142 240 L128 202Z"/>
+            <!-- top edge follows the front rim's curve so the whole potion surface stays visible -->
+            <path d="M34 112 C12 132 12 180 48 202 Q100 224 152 202 C188 180 188 132 166 112 A66 12 0 0 1 34 112Z" fill="url(#cd-iron)"/>
+            <path class="cd-shine" d="M44 128 C34 146 36 170 52 186"/>
+            <!-- side handles: an iron ring hanging from a lug on each shoulder, swaying with the stirring -->
+            <g class="cd-handle cd-handle--l">
+              <circle class="cd-ring" cx="13" cy="136" r="11"/>
+              <rect class="cd-lug" x="16" y="118" width="12" height="11" rx="3"/>
+            </g>
+            <g class="cd-handle cd-handle--r">
+              <circle class="cd-ring" cx="187" cy="136" r="11"/>
+              <rect class="cd-lug" x="172" y="118" width="12" height="11" rx="3"/>
+            </g>
+
+            <!-- front rim -->
+            <path class="cd-rim cd-rim--front" d="M34 112 A66 12 0 0 0 166 112"/>
+
+            <!-- flames licking the bottom of the pot, logs and embers -->
+            <g class="cd-fire">
+              <g transform="translate(78 252)"><path class="cd-flame cd-flame--2" d="M0 0 C-12 0 -14 -12 -8 -22 C-5 -28 -2 -30 0 -40 C3 -30 6 -27 9 -20 C13 -11 11 0 0 0Z"/></g>
+              <g transform="translate(122 252) scale(.9 1.05)"><path class="cd-flame cd-flame--3" d="M0 0 C-12 0 -14 -12 -8 -22 C-5 -28 -2 -30 0 -40 C3 -30 6 -27 9 -20 C13 -11 11 0 0 0Z"/></g>
+              <g transform="translate(100 252) scale(1.15 1.3)"><path class="cd-flame cd-flame--1" d="M0 0 C-12 0 -14 -12 -8 -22 C-5 -28 -2 -30 0 -40 C3 -30 6 -27 9 -20 C13 -11 11 0 0 0Z"/></g>
+              <g transform="translate(100 252) scale(.55 .7)"><path class="cd-flame cd-flame--core" d="M0 0 C-12 0 -14 -12 -8 -22 C-5 -28 -2 -30 0 -40 C3 -30 6 -27 9 -20 C13 -11 11 0 0 0Z"/></g>
+            </g>
+            <rect class="cd-log" x="62" y="248" width="70" height="9" rx="4.5" transform="rotate(8 97 252)"/>
+            <rect class="cd-log" x="70" y="248" width="70" height="9" rx="4.5" transform="rotate(-8 105 252)"/>
+            <circle class="cd-ember cd-ember--1" cx="92" cy="232" r="1.4"/>
+            <circle class="cd-ember cd-ember--2" cx="110" cy="236" r="1.1"/>
+            <circle class="cd-ember cd-ember--3" cx="82" cy="240" r="1"/>
+
+            <!-- splashes leaping out and steam rising -->
+            <g class="cd-bubbles">
+              <circle class="cd-bubble cd-bubble--1" cx="78" cy="110" r="3"/>
+              <circle class="cd-bubble cd-bubble--2" cx="118" cy="110" r="2.2"/>
+              <circle class="cd-bubble cd-bubble--3" cx="132" cy="112" r="2.6"/>
+              <circle class="cd-bubble cd-bubble--4" cx="90" cy="112" r="1.8"/>
+              <circle class="cd-bubble cd-bubble--5" cx="66" cy="112" r="2"/>
+            </g>
+            <g class="cd-steam">
+              <circle class="cd-puff cd-puff--1" cx="80" cy="100" r="16"/>
+              <circle class="cd-puff cd-puff--2" cx="112" cy="98" r="18"/>
+              <circle class="cd-puff cd-puff--3" cx="96" cy="102" r="14"/>
+              <circle class="cd-puff cd-puff--4" cx="130" cy="102" r="13"/>
+              <circle class="cd-puff cd-puff--5" cx="66" cy="102" r="12"/>
+              <circle class="cd-puff cd-puff--6" cx="104" cy="100" r="20"/>
+              <circle class="cd-puff cd-puff--7" cx="122" cy="102" r="15"/>
+              <circle class="cd-puff cd-puff--8" cx="88" cy="100" r="17"/>
+            </g>
+          </svg>
+        </div>
         <figure class="about__photo framed reveal">
           <img src="assets/img/interier.jpg" alt="Interiér Čarokavárny — kulatý stolek pod lampou, stěny plné obrazů" loading="lazy">
         </figure>
@@ -183,6 +316,44 @@
       <div class="container center">
         <h2 class="title reveal"><em data-i18n="res.title">Rezervace</em></h2>
         <p class="lead lead--muted reveal" data-i18n="res.text">Stůl si zarezervujete jednoduše přes náš rezervační systém CRM Cloud Cash. Pár kliků a místo je vaše.</p>
+        <!-- floating wand; sparks swirl around its tip (weave = side to side, depth = near/far) -->
+        <div class="res-wand reveal" title="Mávněte hůlkou ✦">
+          <svg class="wand" viewBox="0 0 240 180" role="img" aria-label="Kouzelná hůlka obklopená jiskrami">
+            <defs>
+              <radialGradient id="wd-glow" cx="50%" cy="50%" r="50%">
+                <stop offset="0" stop-color="#F1F2E9" stop-opacity=".9"/>
+                <stop offset=".35" stop-color="#E0E0D1" stop-opacity=".35"/>
+                <stop offset="1" stop-color="#E0E0D1" stop-opacity="0"/>
+              </radialGradient>
+              <linearGradient id="wd-wood" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0" stop-color="#2B2016"/>
+                <stop offset=".45" stop-color="#6E5338"/>
+                <stop offset="1" stop-color="#1E160F"/>
+              </linearGradient>
+              <path id="wd-star" d="M0,-6 Q0,0 6,0 Q0,0 0,6 Q0,0 -6,0 Q0,0 0,-6Z"/>
+            </defs>
+            <g transform="translate(120 96)">
+              <g class="wd-float">
+                <g transform="rotate(42) scale(1.2)">
+                  <path class="wd-body" d="M-1.6 -66 L1.6 -66 L4 30 L-4 30Z" fill="url(#wd-wood)"/>
+                  <rect class="wd-body" x="-6" y="28" width="12" height="44" rx="5" fill="url(#wd-wood)"/>
+                  <path class="wd-band" d="M-6 36 H6 M-6.2 44 H6.2 M-6 64 H6"/>
+                  <circle class="wd-glow" cx="0" cy="-70" r="20" fill="url(#wd-glow)"/>
+                  <circle class="wd-tip" cx="0" cy="-67" r="2.6"/>
+
+                  <g class="wd-spark" style="--wd-t: 2.6s; --wd-w: .9s;  --wd-delay: 0s"><g class="wd-weave"><g class="wd-depth"><circle r="2"/></g></g></g>
+                  <g class="wd-spark" style="--wd-t: 2.6s; --wd-w: .9s;  --wd-delay: -1.4s"><g class="wd-weave"><g class="wd-depth"><use href="#wd-star"/></g></g></g>
+                  <g class="wd-spark" style="--wd-t: 2.6s; --wd-w: .9s;  --wd-delay: -2.8s"><g class="wd-weave"><g class="wd-depth"><circle r="1.6"/></g></g></g>
+                  <g class="wd-spark" style="--wd-t: 3.2s; --wd-w: 1.2s; --wd-delay: -.7s"><g class="wd-weave wd-weave--wide"><g class="wd-depth"><circle r="1.3"/></g></g></g>
+                  <g class="wd-spark" style="--wd-t: 3.2s; --wd-w: 1.2s; --wd-delay: -3.4s"><g class="wd-weave wd-weave--wide"><g class="wd-depth"><use href="#wd-star" transform="scale(.7)"/></g></g></g>
+                  <g class="wd-spark" style="--wd-t: 2.2s; --wd-w: .7s;  --wd-delay: -2s"><g class="wd-weave"><g class="wd-depth"><circle r="1.1"/></g></g></g>
+                  <g class="wd-spark" style="--wd-t: 3.2s; --wd-w: 1.2s; --wd-delay: -4.6s"><g class="wd-weave wd-weave--wide"><g class="wd-depth"><circle r="1.6"/></g></g></g>
+                  <g class="wd-spark" style="--wd-t: 2.2s; --wd-w: .7s;  --wd-delay: -.4s"><g class="wd-weave"><g class="wd-depth"><use href="#wd-star" transform="scale(.6)"/></g></g></g>
+                </g>
+              </g>
+            </g>
+          </svg>
+        </div>
         <div class="res-buttons reveal">
           <!-- TODO: doplnit odkazy na rezervační systém CRM Cloud Cash -->
           <a class="btn btn--fill" href="#" data-i18n="res.book">Rezervovat stůl</a>

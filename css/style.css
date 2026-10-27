@@ -546,9 +546,145 @@ figure { margin: 0; }
 .about {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 80px;
+  grid-template-areas: "text photo" "cauldron cauldron";
+  gap: 56px 80px;
   align-items: center;
 }
+.about__text { grid-area: text; }
+.about__photo { grid-area: photo; }
+
+/* ---------- Cauldron ---------- */
+
+.about__cauldron {
+  grid-area: cauldron;
+  justify-self: center;
+  width: min(110px, 32vw);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.cauldron { display: block; width: 100%; height: auto; overflow: visible; }
+/* animated parts scale/rotate around their own centre (static transform="" attributes keep the default origin) */
+.cauldron :is(.cd-glow, .cd-fireglow, .cd-flame, .cd-ember, .cd-swirl, .cd-blob, .cd-ripple, .cd-twinkle, .cd-bubble, .cd-puff, .cd-steam) {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.cd-glow { animation: cd-glow 3.2s ease-in-out infinite; }
+@keyframes cd-glow { 50% { opacity: .65; transform: scale(.94); } }
+
+.cd-rim { fill: none; stroke: #1F2B1B; stroke-width: 7; stroke-linecap: round; }
+.cd-rim--front { stroke: #2E3D29; }
+.cd-inside { fill: #050805; }
+.cd-leg { fill: #0C130A; }
+.cd-lug { fill: #1F2B1B; stroke: #2E3D29; stroke-width: 1; }
+.cd-ring { fill: none; stroke: #2E3D29; stroke-width: 4; }
+.cd-handle { transform-box: view-box; animation: cd-sway 1.6s ease-in-out infinite alternate; }
+.cd-handle--l { transform-origin: 22px 124px; }
+.cd-handle--r { transform-origin: 178px 124px; animation-delay: -.4s; }
+@keyframes cd-sway { from { transform: rotate(-5deg); } to { transform: rotate(5deg); } }
+.cd-shine { fill: none; stroke: rgb(224 224 209 / .14); stroke-width: 3; stroke-linecap: round; }
+
+/* Green witch-fire: each tongue flickers on its own beat */
+.cauldron .cd-flame { fill: url(#cd-flame); transform-origin: 50% 100%; animation: cd-flicker 1.1s ease-in-out infinite alternate; }
+.cauldron .cd-flame--2 { animation-duration: .8s; animation-delay: -.3s; }
+.cauldron .cd-flame--3 { animation-duration: .95s; animation-delay: -.6s; }
+.cauldron .cd-flame--core { fill: var(--c-accent-hi); opacity: .9; animation-duration: .6s; }
+.cd-log { fill: #3A2A1A; stroke: #1A120B; stroke-width: 1; }
+.cd-fireglow { animation: cd-glow 1.2s ease-in-out infinite; }
+@keyframes cd-flicker {
+  0%   { transform: scale(1, 1) skewX(0deg); opacity: .85; }
+  50%  { transform: scale(.92, 1.12) skewX(-4deg); opacity: 1; }
+  100% { transform: scale(1.06, .9) skewX(3deg); opacity: .75; }
+}
+.cd-ember { fill: #D6EEC2; animation: cd-ember 1.8s ease-out infinite; }
+.cd-ember--2 { animation-delay: -.6s; }
+.cd-ember--3 { animation-delay: -1.2s; }
+@keyframes cd-ember {
+  0%   { transform: translate(0, 0); opacity: 0; }
+  20%  { opacity: 1; }
+  100% { transform: translate(6px, -26px); opacity: 0; }
+}
+
+.cd-swirl {
+  fill: none;
+  stroke: rgb(241 242 233 / .55);
+  stroke-width: 1.2;
+  stroke-dasharray: 18 12;
+  animation: cd-swirl 3.2s linear infinite;
+}
+.cd-swirl--2 { stroke-dasharray: 9 8; animation-duration: 2.1s; }
+@keyframes cd-swirl { to { stroke-dashoffset: -60; } }
+
+.cd-blob { fill: #C3E2AC; transform: scale(0); animation: cd-blob 2.4s ease-in infinite; }
+.cd-blob--2 { animation-delay: -.7s; }
+.cd-blob--3 { animation-delay: -1.5s; animation-duration: 2s; }
+.cd-blob--4 { animation-delay: -1.1s; animation-duration: 2.8s; }
+@keyframes cd-blob {
+  0%, 40% { transform: scale(0); opacity: 1; }
+  85%     { transform: scale(1); opacity: 1; }
+  100%    { transform: scale(1.3); opacity: 0; }
+}
+
+/* The ladle: x swings, y bobs half a swing later → the tip circles around the pot */
+.cd-stir-x { transform-box: view-box; transform-origin: 0 0; animation: cd-stir-x 1.6s ease-in-out infinite alternate; }
+.cd-stir-y { transform-box: view-box; transform-origin: 0 0; animation: cd-stir-y 1.6s ease-in-out -.8s infinite alternate; }
+@keyframes cd-stir-x {
+  from { transform: translateX(-30px) rotate(-13deg); }
+  to   { transform: translateX(30px) rotate(13deg); }
+}
+@keyframes cd-stir-y {
+  from { transform: translateY(-4px); }
+  to   { transform: translateY(5px); }
+}
+.cd-ripple { fill: none; stroke: rgb(241 242 233 / .6); stroke-width: 1; animation: cd-ripple .8s ease-out infinite; }
+@keyframes cd-ripple { from { transform: scale(.6); opacity: 1; } to { transform: scale(1.6); opacity: 0; } }
+.cd-twinkle { fill: var(--c-accent-hi); animation: cd-twinkle 1.6s ease-in-out infinite; }
+.cd-twinkle--2 { animation-delay: -.8s; }
+@keyframes cd-twinkle { 0%, 100% { opacity: 0; transform: scale(.4) rotate(0deg); } 50% { opacity: 1; transform: scale(1) rotate(45deg); } }
+
+.cd-bubble { fill: #C3E2AC; opacity: 0; animation: cd-bubble 1.9s ease-out infinite; }
+.cd-bubble--2 { animation-delay: -.4s; animation-duration: 1.6s; }
+.cd-bubble--3 { animation-delay: -1.1s; }
+.cd-bubble--4 { animation-delay: -.8s; animation-duration: 2.2s; }
+.cd-bubble--5 { animation-delay: -1.5s; animation-duration: 1.7s; }
+@keyframes cd-bubble {
+  0%   { transform: translate(0, 0) scale(.5); opacity: 0; }
+  15%  { opacity: 1; }
+  100% { transform: translate(var(--dx, 4px), -46px) scale(1); opacity: 0; }
+}
+.cd-bubble--2, .cd-bubble--5 { --dx: -6px; }
+
+.cd-puff { fill: url(#cd-steam); opacity: 0; animation: cd-steam 4.8s ease-out infinite; }
+/* eight puffs spread evenly over one 4.8 s cycle → a steady column of steam */
+.cd-puff--2 { animation-delay: -.6s; }
+.cd-puff--3 { animation-delay: -1.2s; }
+.cd-puff--4 { animation-delay: -1.8s; }
+.cd-puff--5 { animation-delay: -2.4s; }
+.cd-puff--6 { animation-delay: -3s; }
+.cd-puff--7 { animation-delay: -3.6s; }
+.cd-puff--8 { animation-delay: -4.2s; }
+@keyframes cd-steam {
+  0%   { transform: translate(0, 0) scale(.6); opacity: 0; }
+  25%  { opacity: 1; }
+  100% { transform: translate(var(--sx, -10px), -110px) scale(2.4); opacity: 0; }
+}
+.cd-puff--2, .cd-puff--4, .cd-puff--7 { --sx: 12px; }
+.cd-puff--6 { --sx: 2px; }
+
+/* Click → the potion boils over: the pot rattles, steam rushes up and light flares */
+.about__cauldron.is-brewing .cauldron { animation: cd-shake .7s ease-in-out; transform-origin: 50% 85%; }
+.about__cauldron.is-brewing .cd-glow { animation: cd-flare 1.2s var(--ease); }
+.about__cauldron.is-brewing .cd-steam { animation: cd-surge 1.2s var(--ease); }
+@keyframes cd-shake {
+  0%, 100% { transform: none; }
+  15% { transform: translate(-3px, -1px) rotate(-3deg); }
+  30% { transform: translate(3px, 0) rotate(3deg); }
+  45% { transform: translate(-2px, -1px) rotate(-2deg); }
+  60% { transform: translate(2px, 0) rotate(2deg); }
+  75% { transform: translate(-1px, 0) rotate(-1deg); }
+}
+@keyframes cd-flare { 30% { opacity: 1; transform: scale(1.25); } }
+@keyframes cd-surge { 30% { transform: translateY(-8px) scale(1.25); filter: brightness(1.6); } }
 .about .title { margin-bottom: 36px; }
 
 .chips { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 34px; }
@@ -847,6 +983,55 @@ figure { margin: 0; }
 /* ---------- Reservation ---------- */
 
 .section--reservation .title { margin-bottom: 30px; }
+/* column flex so the wand can sit at the end on desktop but under the text on mobile (see order) */
+.section--reservation .container { display: flex; flex-direction: column; }
+
+/* ---------- Wand ---------- */
+
+.res-wand {
+  order: 1;
+  align-self: center;
+  width: min(120px, 36vw);
+  margin-top: 40px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.wand { display: block; width: 100%; height: auto; overflow: visible; }
+
+.wd-float { animation: wd-float 5s ease-in-out infinite; }
+@keyframes wd-float {
+  0%, 100% { transform: translateY(0) rotate(-3deg); }
+  50%      { transform: translateY(-8px) rotate(3deg); }
+}
+.wd-band { fill: none; stroke: rgb(224 224 209 / .35); stroke-width: 1.2; }
+.wd-tip { fill: var(--c-accent-hi); }
+.wd-glow { transform-box: fill-box; transform-origin: center; animation: wd-pulse 2.4s ease-in-out infinite; }
+@keyframes wd-pulse { 50% { transform: scale(.75); opacity: .6; } }
+
+/* Each spark drifts up around the tip (travel) while swinging around it (weave + depth, a quarter beat apart) */
+.wd-spark { fill: var(--c-accent-hi); opacity: 0; animation: wd-travel var(--wd-t) linear var(--wd-delay) infinite; }
+.wd-weave { animation: wd-weave var(--wd-w) ease-in-out infinite alternate; }
+.wd-depth { animation: wd-depth var(--wd-w) ease-in-out calc(var(--wd-w) / -2) infinite alternate; }
+@keyframes wd-travel {
+  0%   { transform: translateY(-44px); opacity: 0; }
+  15%, 80% { opacity: 1; }
+  100% { transform: translateY(-92px); opacity: 0; }
+}
+@keyframes wd-weave { from { transform: translateX(-9px); } to { transform: translateX(9px); } }
+.wd-weave--wide { animation-name: wd-weave-wide; }
+@keyframes wd-weave-wide { from { transform: translateX(-14px); } to { transform: translateX(14px); } }
+@keyframes wd-depth {
+  from { transform: scale(.45); opacity: .35; }
+  to   { transform: scale(1.15); opacity: 1; }
+}
+
+.res-wand.is-waving .wd-float { animation: wd-wave .9s var(--ease); }
+@keyframes wd-wave {
+  0%   { transform: rotate(0); }
+  35%  { transform: rotate(-22deg) translateY(-6px); }
+  70%  { transform: rotate(10deg); }
+  100% { transform: rotate(0); }
+}
 .res-buttons { display: flex; flex-wrap: wrap; justify-content: center; gap: 16px; margin: 44px 0 34px; }
 .res-note {
   margin: 0;
@@ -980,7 +1165,8 @@ figure { margin: 0; }
 
 @media (max-width: 900px) {
   .section { padding: 88px 0; }
-  .about { grid-template-columns: 1fr; gap: 48px; }
+  .about { grid-template-columns: 1fr; grid-template-areas: "text" "cauldron" "photo"; gap: 48px; }
+  .res-wand { order: 0; margin-top: 12px; }
   .branch--wide { grid-template-columns: 1fr; }
   .branch--wide .branch__map { min-height: 260px; }
   .gallery { grid-template-areas: "a b" "c c" "d d"; grid-template-columns: 1fr 2fr; }

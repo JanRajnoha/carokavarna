@@ -68,6 +68,7 @@
     "about.p2": "Inspired by worlds of witchcraft and wizardry, we offer an experience for the whole family — magic you'll carry home in your heart. Come and see for yourself.",
     "chip.coffee": "Specialty coffee", "chip.potions": "Smoking potions", "chip.cakes": "Magical cakes", "chip.products": "Licensed products",
     "menu.note": "The menu may change with the daily offer. We're happy to advise you on site.",
+    "leaflet.title": "Magic menu", "leaflet.hint": "Move your mouse or finger over the menu to reveal what it hides.",
     "gallery.title1": "Take a look", "gallery.title2": "inside",
     "gallery.c1": "Hot chocolate", "gallery.c2": "Smoking potions", "gallery.c3": "Interior", "gallery.c4": "Our menu",
     "branches.title": "Where to find us",
@@ -652,6 +653,40 @@
   document.querySelectorAll(".title, .hero__title").forEach(title => {
     title.addEventListener("click", () => enchantTitle(title));
     title.addEventListener("animationend", e => { if (e.animationName === "enchant") title.classList.remove("is-enchanted"); });
+  });
+
+  // Magic leaflet: a circle of the printed menu shows around the pointer (position fed to CSS via
+  // --unveil-x / --unveil-y). Mouse reveals on hover; a finger reveals while it's held down, with the
+  // circle lifted above the fingertip so the finger doesn't cover what it uncovers.
+  // Where the leaflet is shrunk a lot (phones, small tablets) the circle becomes a lens that magnifies
+  // the menu back to its natural size, so the text is readable.
+  const TOUCH_LIFT = 56, LOUPE_LIFT = 110;
+  document.querySelectorAll(".unveil").forEach(el => {
+    const secret = el.querySelector(".unveil__secret");
+    const move = e => {
+      const r = el.getBoundingClientRect();
+      const shrink = (secret.naturalWidth || 1380) / r.width;
+      const loupe = shrink >= 1.5;
+      const zoom = loupe ? shrink : 1;
+      const lift = e.pointerType !== "touch" ? 0 : loupe ? LOUPE_LIFT : TOUCH_LIFT;
+      const x = e.clientX - r.left, y = e.clientY - r.top;
+      // the image is magnified around the pointer; the circle is drawn on the unmagnified image,
+      // so to appear `lift` px higher it moves up by lift / zoom
+      el.style.setProperty("--unveil-z", zoom);
+      el.style.setProperty("--unveil-ox", `${x}px`);
+      el.style.setProperty("--unveil-oy", `${y}px`);
+      el.style.setProperty("--unveil-x", `${x}px`);
+      el.style.setProperty("--unveil-y", `${y - lift / zoom}px`);
+      el.style.setProperty("--unveil-lx", `${x}px`);           // lens rim, where the circle appears
+      el.style.setProperty("--unveil-ly", `${y - lift}px`);
+      el.classList.toggle("is-loupe", loupe);
+      el.classList.add("is-active");
+    };
+    const hide = () => el.classList.remove("is-active");
+    el.addEventListener("pointerdown", move);
+    el.addEventListener("pointermove", move, { passive: true });
+    el.addEventListener("pointerleave", hide);      // touch: fires after the finger lifts
+    el.addEventListener("pointercancel", hide);
   });
 
   // Chips in "O nás" link to #menu — open the matching tab before the smooth scroll arrives

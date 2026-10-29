@@ -834,6 +834,68 @@ figure { margin: 0; }
   color: var(--c-text-muted);
 }
 
+/* ---------- Kouzelný lístek (menu revealed under the pointer) ---------- */
+
+/* registered so the reveal circle can grow / shrink smoothly (0 = closed, 1 = open) */
+@property --unveil-k { syntax: "<number>"; inherits: true; initial-value: 0; }
+
+.section--leaflet { background: var(--c-deep); }
+.section--leaflet .lead { margin-bottom: 44px; }
+
+.unveil {
+  --unveil-x: 50%;
+  --unveil-y: 50%;
+  --unveil-k: 0;
+  --unveil-z: 1;                          /* magnification (set by JS on narrow screens) */
+  --unveil-size: clamp(56px, 10cqi, 140px); /* circle radius, scales with the leaflet's width */
+  --unveil-soft: .6;                      /* where the feathered edge starts (share of the radius) */
+  z-index: 1;                             /* the lens may spill over the text above (still under the clouds) */
+  container-type: inline-size;
+  touch-action: none;                /* a finger drags the reveal instead of scrolling the page */
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;       /* no long-press image menu on iOS */
+  box-shadow: 0 20px 60px rgb(0 0 0 / .55);
+  transition: --unveil-k .45s var(--ease);
+}
+.unveil.is-active { --unveil-k: 1; }
+.unveil img { width: 100%; height: auto; pointer-events: none; -webkit-user-drag: none; }
+/* The full menu lies over the blank one and is shown only inside the circle — so even if it
+   loads first, nothing is given away */
+.unveil__secret {
+  /* the mask is drawn before the zoom is applied, so its radius is divided by it */
+  --r: calc(var(--unveil-k) * var(--unveil-size) / var(--unveil-z));
+  position: absolute;
+  inset: 0;
+  height: 100%;
+  transform: scale(var(--unveil-z));
+  transform-origin: var(--unveil-ox, 50%) var(--unveil-oy, 50%);
+  /* visible inside the circle, feathered edge, transparent outside */
+  -webkit-mask-image: radial-gradient(circle at var(--unveil-x) var(--unveil-y), #000 calc(var(--r) * var(--unveil-soft)), transparent var(--r));
+          mask-image: radial-gradient(circle at var(--unveil-x) var(--unveil-y), #000 calc(var(--r) * var(--unveil-soft)), transparent var(--r));
+}
+
+/* Narrow screens: the printed text would be too small, so the circle becomes a magic lens showing
+   the menu at its natural size — bigger, sharper-edged and rimmed with light */
+.unveil.is-loupe { --unveil-size: 92px; --unveil-soft: .88; }
+.unveil::before {
+  content: "";
+  position: absolute;
+  z-index: 2;
+  left: var(--unveil-lx);
+  top: var(--unveil-ly);
+  width: calc(2 * var(--unveil-size));
+  aspect-ratio: 1;
+  translate: -50% -50%;
+  scale: var(--unveil-k);
+  border-radius: 50%;
+  border: 1px solid rgb(241 242 233 / .6);
+  box-shadow: 0 0 18px rgb(224 224 209 / .35), inset 0 0 16px rgb(7 13 6 / .35);
+  pointer-events: none;
+  display: none;
+}
+.unveil.is-loupe::before { display: block; }
+
 /* ---------- Gallery ---------- */
 
 .gallery {

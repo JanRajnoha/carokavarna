@@ -264,10 +264,33 @@
     <section class="section section--leaflet" id="listek">
       <div class="container center">
         <h2 class="title reveal"><em data-i18n="leaflet.title">Kouzelný lístek</em></h2>
-        <p class="lead lead--muted reveal" data-i18n="leaflet.hint">Přejeďte po lístku myší nebo prstem a odhalte, co skrývá.</p>
+        <p class="lead lead--muted reveal">
+          <span class="unveil-hint--hover" data-i18n="leaflet.hint">Přejeďte po lístku myší a odhalte, co skrývá.</span>
+          <span class="unveil-hint--wand" data-i18n="leaflet.hintWand">Sledujte kouzelnou hůlku — odhaluje, co lístek skrývá.</span>
+        </p>
         <figure class="unveil framed reveal">
           <img src="assets/img/menu-blank.webp" width="1380" height="926" alt="" loading="lazy" decoding="async">
           <img class="unveil__secret" src="assets/img/menu-full.webp" width="1380" height="926" alt="Nápojový lístek Čarokavárny — káva, lektvary, limonády a dobroty s cenami" loading="lazy" decoding="async">
+          <!-- touch screens only: drifts over the leaflet on its own, its tip (top centre) is where the menu shows -->
+          <svg class="unveil__wand" viewBox="0 0 10 96" aria-hidden="true">
+            <defs>
+              <radialGradient id="uv-glow" cx="50%" cy="50%" r="50%">
+                <stop offset="0" stop-color="#F1F2E9" stop-opacity=".95"/>
+                <stop offset=".35" stop-color="#E0E0D1" stop-opacity=".4"/>
+                <stop offset="1" stop-color="#E0E0D1" stop-opacity="0"/>
+              </radialGradient>
+              <linearGradient id="uv-wood" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0" stop-color="#2B2016"/>
+                <stop offset=".45" stop-color="#7A5D3F"/>
+                <stop offset="1" stop-color="#1E160F"/>
+              </linearGradient>
+            </defs>
+            <path d="M4 3 L6 3 L7.6 60 L2.4 60Z" fill="url(#uv-wood)"/>
+            <rect x="1.6" y="58" width="6.8" height="38" rx="3" fill="url(#uv-wood)"/>
+            <path d="M1.6 64 H8.4 M1.6 69 H8.4 M1.6 90 H8.4" stroke="#A0805A" stroke-width=".7" opacity=".7"/>
+            <circle class="unveil__glow" cx="5" cy="2" r="14" fill="url(#uv-glow)"/>
+            <circle cx="5" cy="2" r="1.8" fill="#F1F2E9"/>
+          </svg>
         </figure>
       </div>
     </section>

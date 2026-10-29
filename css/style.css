@@ -896,6 +896,36 @@ figure { margin: 0; }
 }
 .unveil.is-loupe::before { display: block; }
 
+/* Touch screens (no hover): a magic wand drifts over the leaflet by itself and the menu shows
+   around its tip, with a fading trail (JS moves the wand and writes the mask). The page scrolls normally. */
+.unveil.is-wand { touch-action: auto; }
+.unveil__wand {
+  display: none;
+  position: absolute;
+  z-index: 2;
+  left: -5px;                    /* tip (top centre of the 10px-wide wand) sits on the point */
+  top: 0;
+  width: 10px;
+  height: 96px;
+  overflow: visible;
+  transform-origin: 5px 2px;     /* turns around its tip */
+  pointer-events: none;
+  filter: drop-shadow(0 6px 6px rgb(7 13 6 / .55));
+}
+.unveil.is-wand .unveil__wand { display: block; }
+.unveil__glow { transform-origin: 5px 2px; animation: wand-glow 1.6s ease-in-out infinite; }
+@keyframes wand-glow {
+  0%, 100% { opacity: .75; transform: scale(.85); }
+  50%      { opacity: 1;   transform: scale(1.15); }
+}
+
+/* hint matches the device: "move the mouse" vs "watch the wand" */
+.unveil-hint--wand { display: none; }
+@media (hover: none) {
+  .unveil-hint--hover { display: none; }
+  .unveil-hint--wand { display: inline; }
+}
+
 /* ---------- Gallery ---------- */
 
 .gallery {

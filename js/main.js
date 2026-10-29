@@ -68,7 +68,8 @@
     "about.p2": "Inspired by worlds of witchcraft and wizardry, we offer an experience for the whole family — magic you'll carry home in your heart. Come and see for yourself.",
     "chip.coffee": "Specialty coffee", "chip.potions": "Smoking potions", "chip.cakes": "Magical cakes", "chip.products": "Licensed products",
     "menu.note": "The menu may change with the daily offer. We're happy to advise you on site.",
-    "leaflet.title": "Magic menu", "leaflet.hint": "Move your mouse or finger over the menu to reveal what it hides.",
+    "leaflet.title": "Magic menu", "leaflet.hint": "Move your mouse over the menu to reveal what it hides.",
+    "leaflet.hintWand": "Follow the magic wand — it reveals what the menu hides.",
     "gallery.title1": "Take a look", "gallery.title2": "inside",
     "gallery.c1": "Hot chocolate", "gallery.c2": "Smoking potions", "gallery.c3": "Interior", "gallery.c4": "Our menu",
     "branches.title": "Where to find us",
@@ -660,9 +661,12 @@
   // circle lifted above the fingertip so the finger doesn't cover what it uncovers.
   // Where the leaflet is shrunk a lot (phones, small tablets) the circle becomes a lens that magnifies
   // the menu back to its natural size, so the text is readable.
+  // Touch screens can't hover, so there a wand reveals the menu by itself instead (see wandReveal).
   const TOUCH_LIFT = 56, LOUPE_LIFT = 110;
+  const hoverless = window.matchMedia("(hover: none)").matches;
   document.querySelectorAll(".unveil").forEach(el => {
     const secret = el.querySelector(".unveil__secret");
+    if (hoverless) { wandReveal(el, secret); return; }
     const move = e => {
       const r = el.getBoundingClientRect();
       const shrink = (secret.naturalWidth || 1380) / r.width;
@@ -688,6 +692,54 @@
     el.addEventListener("pointerleave", hide);      // touch: fires after the finger lifts
     el.addEventListener("pointercancel", hide);
   });
+
+  // The wand drifts along a looping Lissajous figure that sweeps the whole leaflet; the menu shows
+  // around its tip and in a shrinking trail of circles behind it (each mask layer is one circle).
+  // With reduced motion the menu is simply shown whole.
+  function wandReveal(el, secret) {
+    const wand = el.querySelector(".unveil__wand");
+    el.classList.add("is-wand");
+    const setMask = m => { secret.style.webkitMaskImage = secret.style.maskImage = m; };
+    if (reduceMotion) { setMask("none"); return; }
+
+    const LOOP = 20, TRAIL = 8, LAG = 0.14;       // s per loop, circles in the trail, s between them
+    // tip position at time t, as a share of the leaflet's width / height
+    const at = t => {
+      const a = (t / LOOP) * 2 * Math.PI;
+      return [0.5 + 0.42 * Math.sin(3 * a), 0.5 + 0.37 * Math.sin(2 * a + Math.PI / 4)];
+    };
+    let running = false, start = null, frame = 0;
+
+    const tick = now => {
+      if (!running) return;
+      if (start === null) start = now;
+      const t = (now - start) / 1000;
+      const w = el.clientWidth, h = el.clientHeight;
+      const R = Math.max(36, w * 0.13) * Math.min(t / 0.8, 1);   // grows in at the start
+      const circles = [];
+      for (let i = 0; i < TRAIL; i++) {
+        const [px, py] = at(t - i * LAG);
+        const r = R * (1 - i / TRAIL);
+        circles.push(`radial-gradient(circle at ${px * w}px ${py * h}px, #000 ${r * 0.55}px, transparent ${r}px)`);
+      }
+      setMask(circles.join(","));
+
+      const [x, y] = at(t), [nx] = at(t + 0.05);
+      const lean = Math.max(-1, Math.min(1, ((nx - x) * w) / 8)) * 14;   // tilts into its direction of travel
+      wand.style.transform = `translate(${x * w}px, ${y * h}px) rotate(${lean - 35}deg)`;
+      if (++frame % 5 === 0) {                     // a little dust falls off the tip
+        const b = el.getBoundingClientRect();
+        addSpark(b.left + x * w, b.top + y * h);
+      }
+      requestAnimationFrame(tick);
+    };
+
+    setMask("radial-gradient(transparent, transparent)");   // nothing shows until the wand arrives
+    new IntersectionObserver(([e]) => {
+      const was = running; running = e.isIntersecting;
+      if (running && !was) requestAnimationFrame(tick);
+    }).observe(el);
+  }
 
   // Chips in "O nás" link to #menu — open the matching tab before the smooth scroll arrives
   document.querySelectorAll("[data-open-tab]").forEach(link =>

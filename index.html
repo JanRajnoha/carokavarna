@@ -109,7 +109,7 @@
         </div>
         <!-- bubbling cauldron, side view: a ladle stirs a glowing potion over green witch-fire.
              Drawn back to front: glow → fire → back rim → potion → ladle → pot body → front rim → steam -->
-        <div class="about__cauldron reveal" title="Zamíchejte lektvarem ✦">
+        <button class="about__cauldron reveal" type="button" aria-label="Zamíchat lektvarem" title="Zamíchejte lektvarem ✦">
           <svg class="cauldron" viewBox="0 0 200 264" role="img" aria-label="Bublající kotlík s lektvarem">
             <defs>
               <radialGradient id="cd-glow" cx="50%" cy="50%" r="50%">
@@ -120,21 +120,31 @@
                 <stop offset="0" stop-color="#D6EEC2"/>
                 <stop offset="1" stop-color="#7FAE6A"/>
               </linearGradient>
-              <linearGradient id="cd-iron" x1="0" y1="0" x2="1" y2="0">
-                <stop offset="0" stop-color="#0A1009"/>
-                <stop offset=".3" stop-color="#2A3826"/>
-                <stop offset=".55" stop-color="#151F12"/>
-                <stop offset="1" stop-color="#050805"/>
+              <radialGradient id="cd-iron" cx="36%" cy="25%" r="75%">
+                <stop offset="0" stop-color="#566057"/><stop offset=".28" stop-color="#303a32"/>
+                <stop offset=".65" stop-color="#171e1a"/><stop offset="1" stop-color="#080c0a"/>
+              </radialGradient>
+              <linearGradient id="cd-metal-rim" x1="0" y1="0" x2="0" y2="1">
+                <stop stop-color="#879187"/><stop offset=".45" stop-color="#303b32"/><stop offset="1" stop-color="#0b110d"/>
               </linearGradient>
+              <filter id="cd-texture" x="0" y="0" width="100%" height="100%">
+                <feTurbulence type="fractalNoise" baseFrequency=".32" numOctaves="3" seed="8" result="grain"/>
+                <feColorMatrix in="grain" type="saturate" values="0"/>
+              </filter>
+              <clipPath id="cd-body-clip"><path d="M34 112 C12 132 12 180 48 202 Q100 224 152 202 C188 180 188 132 166 112 A66 12 0 0 1 34 112Z"/></clipPath>
               <linearGradient id="cd-flame" x1="0" y1="1" x2="0" y2="0">
-                <stop offset="0" stop-color="#F1F2E9"/>
-                <stop offset=".45" stop-color="#A9D18E"/>
-                <stop offset="1" stop-color="#637368" stop-opacity="0"/>
+                <stop offset="0" stop-color="#e4ffd0"/>
+                <stop offset=".22" stop-color="#a8e78a"/>
+                <stop offset=".58" stop-color="#63ad68" stop-opacity=".9"/>
+                <stop offset="1" stop-color="#94d69b" stop-opacity="0"/>
               </linearGradient>
               <radialGradient id="cd-steam" cx="50%" cy="50%" r="50%">
-                <stop offset="0" stop-color="#E0E0D1" stop-opacity=".55"/>
+                <stop offset="0" stop-color="#edf4e8"/>
+                <stop offset=".45" stop-color="#e8f1df" stop-opacity=".92"/>
+                <stop offset=".72" stop-color="#dce8d5" stop-opacity=".55"/>
                 <stop offset="1" stop-color="#E0E0D1" stop-opacity="0"/>
               </radialGradient>
+              <filter id="cd-vapour-blur" x="-80%" y="-30%" width="260%" height="160%"><feGaussianBlur stdDeviation="2.2"/></filter>
               <linearGradient id="cd-wood" x1="0" y1="0" x2="1" y2="0">
                 <stop offset="0" stop-color="#6B5134"/>
                 <stop offset=".5" stop-color="#A0805A"/>
@@ -152,8 +162,8 @@
             <!-- fire behind the pot (only its glow and tips around the belly show) -->
             <ellipse class="cd-fireglow" cx="100" cy="236" rx="60" ry="26" fill="url(#cd-glow)"/>
             <g class="cd-fire">
-              <g transform="translate(70 250) scale(1.4 1.9)"><path class="cd-flame cd-flame--2" d="M0 0 C-12 0 -14 -12 -8 -22 C-5 -28 -2 -30 0 -40 C3 -30 6 -27 9 -20 C13 -11 11 0 0 0Z"/></g>
-              <g transform="translate(130 250) scale(1.4 1.9)"><path class="cd-flame cd-flame--3" d="M0 0 C-12 0 -14 -12 -8 -22 C-5 -28 -2 -30 0 -40 C3 -30 6 -27 9 -20 C13 -11 11 0 0 0Z"/></g>
+              <g transform="translate(70 250) scale(1.4 1.9)"><path class="cd-flame cd-flame--2" d="M0 0 C-13 0 -16 -8 -10 -17 C-8 -21 -10 -26 -13 -29 C-5 -27 -4 -22 -3 -20 C-1 -29 7 -31 3 -43 C15 -34 8 -27 11 -22 C17 -13 13 -3 6 -1 Q3 0 0 0Z"/></g>
+              <g transform="translate(130 250) scale(1.4 1.9)"><path class="cd-flame cd-flame--3" d="M0 0 C-12 0 -14 -9 -9 -16 C-5 -22 -9 -27 -7 -34 C-3 -29 0 -27 0 -21 C5 -28 3 -34 10 -40 C8 -30 15 -24 13 -15 C12 -5 8 0 0 0Z"/></g>
             </g>
 
             <!-- back rim -->
@@ -162,6 +172,7 @@
             <!-- dark inner wall, then the potion sitting a little below the rim, with a swirl turning on it -->
             <ellipse class="cd-inside" cx="100" cy="112" rx="63" ry="10.5"/>
             <ellipse cx="100" cy="119" rx="57" ry="8" fill="url(#cd-potion)"/>
+            <ellipse cx="92" cy="116.5" rx="35" ry="2.2" fill="#f3ffe2" opacity=".28"/>
             <ellipse class="cd-swirl" cx="100" cy="119" rx="40" ry="5.2"/>
             <ellipse class="cd-swirl cd-swirl--2" cx="100" cy="119" rx="22" ry="3"/>
 
@@ -193,6 +204,11 @@
             <path class="cd-leg" d="M142 196 L152 240 L142 240 L128 202Z"/>
             <!-- top edge follows the front rim's curve so the whole potion surface stays visible -->
             <path d="M34 112 C12 132 12 180 48 202 Q100 224 152 202 C188 180 188 132 166 112 A66 12 0 0 1 34 112Z" fill="url(#cd-iron)"/>
+            <g clip-path="url(#cd-body-clip)">
+              <rect x="20" y="110" width="160" height="110" filter="url(#cd-texture)" opacity=".13"/>
+              <ellipse cx="91" cy="215" rx="65" ry="23" fill="#b1d99a" opacity=".07"/>
+              <path d="M42 135 C36 160 45 188 66 199" fill="none" stroke="#dce9d8" stroke-opacity=".1" stroke-width="7" stroke-linecap="round"/>
+            </g>
             <path class="cd-shine" d="M44 128 C34 146 36 170 52 186"/>
             <!-- side handles: an iron ring hanging from a lug on each shoulder, swaying with the stirring -->
             <g class="cd-handle cd-handle--l">
@@ -209,13 +225,18 @@
 
             <!-- flames licking the bottom of the pot, logs and embers -->
             <g class="cd-fire">
-              <g transform="translate(78 252)"><path class="cd-flame cd-flame--2" d="M0 0 C-12 0 -14 -12 -8 -22 C-5 -28 -2 -30 0 -40 C3 -30 6 -27 9 -20 C13 -11 11 0 0 0Z"/></g>
-              <g transform="translate(122 252) scale(.9 1.05)"><path class="cd-flame cd-flame--3" d="M0 0 C-12 0 -14 -12 -8 -22 C-5 -28 -2 -30 0 -40 C3 -30 6 -27 9 -20 C13 -11 11 0 0 0Z"/></g>
-              <g transform="translate(100 252) scale(1.15 1.3)"><path class="cd-flame cd-flame--1" d="M0 0 C-12 0 -14 -12 -8 -22 C-5 -28 -2 -30 0 -40 C3 -30 6 -27 9 -20 C13 -11 11 0 0 0Z"/></g>
-              <g transform="translate(100 252) scale(.55 .7)"><path class="cd-flame cd-flame--core" d="M0 0 C-12 0 -14 -12 -8 -22 C-5 -28 -2 -30 0 -40 C3 -30 6 -27 9 -20 C13 -11 11 0 0 0Z"/></g>
+              <g transform="translate(78 252)"><path class="cd-flame cd-flame--2" d="M0 0 C-12 0 -14 -9 -9 -18 C-6 -23 -2 -24 -4 -33 C2 -29 3 -24 2 -19 C8 -24 9 -31 7 -38 C16 -30 15 -25 13 -18 C17 -8 11 0 0 0Z"/></g>
+              <g transform="translate(122 252) scale(.9 1.05)"><path class="cd-flame cd-flame--3" d="M0 0 C-13 0 -16 -8 -10 -17 C-8 -21 -10 -26 -13 -29 C-5 -27 -4 -22 -3 -20 C-1 -29 7 -31 3 -43 C15 -34 8 -27 11 -22 C17 -13 13 -3 6 -1 Q3 0 0 0Z"/></g>
+              <g transform="translate(100 252) scale(1.15 1.3)"><path class="cd-flame cd-flame--1" d="M0 0 C-12 0 -14 -9 -9 -16 C-5 -22 -9 -27 -7 -34 C-3 -29 0 -27 0 -21 C5 -28 3 -34 10 -40 C8 -30 15 -24 13 -15 C12 -5 8 0 0 0Z"/></g>
+              <g transform="translate(100 252) scale(.55 .7)"><path class="cd-flame cd-flame--core" d="M0 0 C-12 0 -14 -9 -9 -18 C-6 -23 -2 -24 -4 -33 C2 -29 3 -24 2 -19 C8 -24 9 -31 7 -38 C16 -30 15 -25 13 -18 C17 -8 11 0 0 0Z"/></g>
             </g>
             <rect class="cd-log" x="62" y="248" width="70" height="9" rx="4.5" transform="rotate(8 97 252)"/>
             <rect class="cd-log" x="70" y="248" width="70" height="9" rx="4.5" transform="rotate(-8 105 252)"/>
+            <g class="cd-fire cd-fire--front" aria-hidden="true">
+              <g transform="translate(84 258) scale(.52 .57)"><path class="cd-flame cd-flame--2" d="M0 0 C-12 -1 -14 -9 -8 -17 C-4 -22 -8 -27 -6 -32 C0 -29 1 -23 0 -19 C5 -25 5 -32 9 -37 C8 -27 14 -22 12 -14 C11 -5 7 0 0 0Z"/></g>
+              <g transform="translate(108 259) scale(.6 .7)"><path class="cd-flame cd-flame--3" d="M0 0 C-11 0 -13 -8 -8 -15 C-5 -20 -8 -23 -9 -28 C-3 -25 -2 -21 -1 -18 C1 -26 8 -28 5 -38 C14 -31 10 -24 12 -19 C15 -10 12 -2 5 0Z"/></g>
+              <g transform="translate(124 257) scale(.35 .48)"><path class="cd-flame cd-flame--core" d="M0 0 C-11 0 -13 -9 -7 -17 C-3 -23 -5 -28 -3 -34 C0 -27 4 -24 3 -19 C8 -25 9 -30 8 -35 C16 -26 13 -19 12 -15 C14 -7 10 0 0 0Z"/></g>
+            </g>
             <circle class="cd-ember cd-ember--1" cx="92" cy="232" r="1.4"/>
             <circle class="cd-ember cd-ember--2" cx="110" cy="236" r="1.1"/>
             <circle class="cd-ember cd-ember--3" cx="82" cy="240" r="1"/>
@@ -228,18 +249,40 @@
               <circle class="cd-bubble cd-bubble--4" cx="90" cy="112" r="1.8"/>
               <circle class="cd-bubble cd-bubble--5" cx="66" cy="112" r="2"/>
             </g>
-            <g class="cd-steam">
-              <circle class="cd-puff cd-puff--1" cx="80" cy="100" r="16"/>
-              <circle class="cd-puff cd-puff--2" cx="112" cy="98" r="18"/>
-              <circle class="cd-puff cd-puff--3" cx="96" cy="102" r="14"/>
-              <circle class="cd-puff cd-puff--4" cx="130" cy="102" r="13"/>
-              <circle class="cd-puff cd-puff--5" cx="66" cy="102" r="12"/>
-              <circle class="cd-puff cd-puff--6" cx="104" cy="100" r="20"/>
-              <circle class="cd-puff cd-puff--7" cx="122" cy="102" r="15"/>
-              <circle class="cd-puff cd-puff--8" cx="88" cy="100" r="17"/>
+            <g class="cd-steam" aria-hidden="true">
+              <path class="cd-vapour cd-vapour--1" d="M79 110 C69 100 85 94 80 83 C76 74 68 72 76 62 C83 53 90 50 86 39 C98 49 91 57 85 65 C78 74 90 79 90 87 C91 98 81 101 87 110Z"/>
+              <path class="cd-vapour cd-vapour--2" d="M105 111 C115 101 100 95 104 85 C109 75 119 73 115 63 C111 54 100 50 105 39 C94 47 99 58 106 65 C113 73 99 79 98 88 C97 98 108 103 101 111Z"/>
+              <path class="cd-vapour cd-vapour--3" d="M125 110 C135 101 122 96 127 86 C130 80 139 75 135 67 C132 60 125 58 128 50 C120 57 125 65 130 70 C136 77 121 82 121 90 C120 99 130 104 122 110Z"/>
+              <path class="cd-vapour cd-vapour--4" d="M63 111 C57 101 73 94 68 83 C64 73 56 69 63 58 C68 49 74 46 72 35 C81 44 78 52 72 60 C65 70 77 76 78 85 C80 97 67 102 72 111Z"/>
+              <path class="cd-vapour cd-vapour--5" d="M141 111 C149 101 135 95 141 84 C146 75 154 71 149 61 C146 54 139 50 143 40 C132 49 138 58 144 65 C150 74 136 79 135 89 C133 99 144 104 138 111Z"/>
+              <!-- A continuous cloud bank feeds rolling fog down to the base of the pot. -->
+              <ellipse class="cd-fog cd-fog--surface" cx="100" cy="114" rx="72" ry="19"/>
+              <ellipse class="cd-fog cd-fog--front" cx="100" cy="126" rx="56" ry="22"/>
+            </g>
+            <g class="cd-overflow" aria-hidden="true">
+              <g class="cd-cloud-bank cd-cloud-bank--left">
+                <ellipse class="cd-cloud" cx="38" cy="124" rx="32" ry="23"/>
+                <ellipse class="cd-cloud" cx="35" cy="145" rx="30" ry="26"/>
+                <ellipse class="cd-cloud" cx="40" cy="168" rx="28" ry="28"/>
+                <ellipse class="cd-cloud" cx="48" cy="190" rx="32" ry="26"/>
+                <ellipse class="cd-cloud" cx="56" cy="205" rx="36" ry="18"/>
+              </g>
+              <g transform="translate(38 119)"><g class="cd-cascade cd-cascade--left" style="--cloud-delay: -0s"><ellipse class="cd-cloud" cx="0" cy="0" rx="29" ry="19"/><ellipse class="cd-cloud" cx="-13" cy="13" rx="22" ry="16"/></g></g>
+              <g transform="translate(38 119)"><g class="cd-cascade cd-cascade--left" style="--cloud-delay: -1.7s"><ellipse class="cd-cloud" cx="0" cy="0" rx="29" ry="19"/><ellipse class="cd-cloud" cx="-13" cy="13" rx="22" ry="16"/></g></g>
+              <g transform="translate(38 119)"><g class="cd-cascade cd-cascade--left" style="--cloud-delay: -3.4s"><ellipse class="cd-cloud" cx="0" cy="0" rx="29" ry="19"/><ellipse class="cd-cloud" cx="-13" cy="13" rx="22" ry="16"/></g></g>
+              <g class="cd-cloud-bank cd-cloud-bank--right">
+                <ellipse class="cd-cloud" cx="162" cy="124" rx="32" ry="23"/>
+                <ellipse class="cd-cloud" cx="165" cy="145" rx="30" ry="26"/>
+                <ellipse class="cd-cloud" cx="160" cy="168" rx="28" ry="28"/>
+                <ellipse class="cd-cloud" cx="152" cy="190" rx="32" ry="26"/>
+                <ellipse class="cd-cloud" cx="144" cy="205" rx="36" ry="18"/>
+              </g>
+              <g transform="translate(162 119)"><g class="cd-cascade cd-cascade--right" style="--cloud-delay: -0s"><ellipse class="cd-cloud" cx="0" cy="0" rx="29" ry="19"/><ellipse class="cd-cloud" cx="13" cy="13" rx="22" ry="16"/></g></g>
+              <g transform="translate(162 119)"><g class="cd-cascade cd-cascade--right" style="--cloud-delay: -1.7s"><ellipse class="cd-cloud" cx="0" cy="0" rx="29" ry="19"/><ellipse class="cd-cloud" cx="13" cy="13" rx="22" ry="16"/></g></g>
+              <g transform="translate(162 119)"><g class="cd-cascade cd-cascade--right" style="--cloud-delay: -3.4s"><ellipse class="cd-cloud" cx="0" cy="0" rx="29" ry="19"/><ellipse class="cd-cloud" cx="13" cy="13" rx="22" ry="16"/></g></g>
             </g>
           </svg>
-        </div>
+        </button>
         <figure class="about__photo framed reveal">
           <img src="assets/img/interier.jpg" alt="Interiér Čarokavárny — kulatý stolek pod lampou, stěny plné obrazů" loading="lazy">
         </figure>

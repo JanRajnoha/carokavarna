@@ -122,17 +122,22 @@ figure { margin: 0; }
   top: -2px; bottom: -2px; left: -2px;
   width: calc(100% + 80px);       /* the head overshoots, so the finished fill covers the whole button */
   z-index: -1;
+  /* Head geometry: the body ends 70px before the right end; a half-ellipse (60px long) continues it.
+     The ellipse is fully opaque out to 70% of its radius — at the seam that covers the whole height
+     (50% / 72% ≈ .69), so body and tip join without a hard vertical edge, then it rounds off into a
+     soft tip. The body end (100% − 70px) lies right of the button's edge (100% − 78px), so a finished
+     hover still fills the button completely. */
   background:
-    conic-gradient(from 230deg at calc(100% - 30px) 50%,
+    conic-gradient(from 230deg at calc(100% - 34px) 50%,
       rgb(241 242 233 / 0) 0deg, rgb(241 242 233 / .6) 40deg, rgb(241 242 233 / 0) 80deg 360deg),
-    radial-gradient(56px 28px at calc(100% - 40px) 50%, var(--c-paper), rgb(241 242 233 / 0) 72%),
-    linear-gradient(90deg, var(--c-accent) 0, var(--c-accent) calc(100% - 170px), var(--c-paper) calc(100% - 44px));
+    radial-gradient(52px 30px at calc(100% - 46px) 50%, var(--c-paper), rgb(241 242 233 / 0) 72%),
+    linear-gradient(90deg, var(--c-accent) 0, var(--c-accent) calc(100% - 200px), var(--c-paper) calc(100% - 64px));
   -webkit-mask:
-    linear-gradient(#000 0 0) left / calc(100% - 44px) 100% no-repeat,
-    radial-gradient(44px 62% at calc(100% - 44px) 50%, #000 52%, rgb(0 0 0 / 0) 100%) no-repeat;
+    linear-gradient(#000 0 0) left / calc(100% - 70px) 100% no-repeat,
+    radial-gradient(60px 72% at calc(100% - 70px) 50%, #000 70%, rgb(0 0 0 / 0) 100%) no-repeat;
   mask:
-    linear-gradient(#000 0 0) left / calc(100% - 44px) 100% no-repeat,
-    radial-gradient(44px 62% at calc(100% - 44px) 50%, #000 52%, rgb(0 0 0 / 0) 100%) no-repeat;
+    linear-gradient(#000 0 0) left / calc(100% - 70px) 100% no-repeat,
+    radial-gradient(60px 72% at calc(100% - 70px) 50%, #000 70%, rgb(0 0 0 / 0) 100%) no-repeat;
   transform: translateX(-100%);
   transition: transform 1.2s cubic-bezier(.45, .05, .3, 1);
 }

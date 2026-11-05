@@ -11,7 +11,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Jost:wght@400;500&display=swap" rel="stylesheet">
   <!-- ?v= busts stale caches (in-app browsers like Messenger hold on to old files) — bump it on every deploy that changes CSS/JS -->
-  <link rel="stylesheet" href="css/style.css?v=20261029">
+  <link rel="stylesheet" href="css/style.css?v=20261105">
 </head>
 <body class="is-loading">
 
@@ -295,7 +295,7 @@
         <!-- carousel: swipe / scroll-snap track, arrows + counter; a click opens the photo in the lightbox -->
         <div class="about__photo carousel reveal" role="region" aria-roledescription="carousel" aria-label="Interiér Čarokavárny">
           <div class="carousel__track" tabindex="0">
-            <figure class="carousel__slide framed"><video src="assets/video/interier-pruchod.mp4" poster="assets/video/interier-pruchod-poster.jpg" width="720" height="1280" muted loop playsinline preload="none" data-inview-play aria-label="Procházka Čarokavárnou — drak, popínavé rostliny, dráček a mlha ze suchého ledu"></video></figure>
+            <figure class="carousel__slide framed"><video src="assets/video/interier-pruchod.mp4" data-poster="assets/video/interier-pruchod-poster.jpg" width="720" height="1280" muted loop playsinline preload="none" data-inview-play aria-label="Procházka Čarokavárnou — drak, popínavé rostliny, dráček a mlha ze suchého ledu"></video></figure>
             <figure class="carousel__slide framed"><img src="assets/img/interier/01-vstup-sova.jpg" alt="Cihlová stěna s logem Čarokavárny, sněžná sova a kufry na vozíku v mlze" loading="lazy"></figure>
             <figure class="carousel__slide framed"><img src="assets/img/interier/02-koutek-krb.jpg" alt="Kouzelný koutek s křeslem, krbem a poletujícími dopisy" loading="lazy" style="object-position: 42% 50%"></figure>
             <figure class="carousel__slide framed"><img src="assets/img/interier/03-kreslo-dopisy.jpg" alt="Zelené křeslo pod lampou, stěna plná kouzelnických cedulí" loading="lazy"></figure>
@@ -450,7 +450,7 @@
 
         <div class="carousel carousel--multi carousel--cakes reveal" role="region" aria-roledescription="carousel" aria-label="Ukázka kouzelných zákusků">
           <div class="carousel__track" tabindex="0">
-            <figure class="carousel__slide framed"><video src="assets/video/vitrina-zakusky.mp4" poster="assets/video/vitrina-zakusky-poster.jpg" width="720" height="1280" muted loop playsinline preload="none" data-inview-play aria-label="Vitrína plná kouzelných zákusků — lektvary, kotlíky, dorty a dezerty v korbelících"></video></figure>
+            <figure class="carousel__slide framed"><video src="assets/video/vitrina-zakusky.mp4" data-poster="assets/video/vitrina-zakusky-poster.jpg" width="720" height="1280" muted loop playsinline preload="none" data-inview-play aria-label="Vitrína plná kouzelných zákusků — lektvary, kotlíky, dorty a dezerty v korbelících"></video></figure>
             <figure class="carousel__slide framed"><img src="assets/img/zakusky/01-svitky-pecet.jpg" alt="Zákusky ve tvaru svitků s červenou voskovou pečetí" loading="lazy"></figure>
             <figure class="carousel__slide framed"><img src="assets/img/zakusky/02-vitrina-klobouky.jpg" alt="Vitrína s cupcaky s moudrým kloboukem a žlutými lahvičkami lektvaru" loading="lazy"></figure>
             <figure class="carousel__slide framed"><img src="assets/img/zakusky/03-vitrina-mandragory-mysky.jpg" alt="Cupcaky s mandragorou, čokoládové myšky a dezerty v korbelících" loading="lazy"></figure>
@@ -590,7 +590,7 @@
             <p class="lead reveal" data-i18n="special.p2">Kávový zážitek, který najdete jen u&nbsp;nás!</p>
           </div>
           <figure class="special__video framed reveal">
-            <video src="assets/video/cukrovy-mrak.mp4" poster="assets/video/cukrovy-mrak-poster.jpg"
+            <video src="assets/video/cukrovy-mrak.mp4" data-poster="assets/video/cukrovy-mrak-poster.jpg"
                    width="720" height="1280" muted loop playsinline preload="none" data-inview-play
                    aria-label="Cukrový mrak nad šálkem lunga se v páře rozpouští a prší do kávy"></video>
           </figure>
@@ -908,6 +908,6 @@
     <p class="footer__copy">© <span data-year>2026</span> Čarokavárna · <span data-i18n="footer.made">Vytvořeno s kouzlem</span> · Brno</p>
   </footer>
 
-  <script src="js/main.js?v=20261029"></script>
+  <script src="js/main.js?v=20261105"></script>
 </body>
 </html>

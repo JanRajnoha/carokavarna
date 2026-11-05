@@ -271,6 +271,14 @@
      when about to be seen, loop silently while visible (a carousel slide scrolled aside
      counts as hidden) and pause otherwise; with reduced motion they wait for a click
      --------------------------------------------------------- */
+  // Still frames (data-poster) are set only when the video comes within ~1 screen, like lazy images
+  const posterObserver = new IntersectionObserver(entries => entries.forEach(entry => {
+    if (!entry.isIntersecting) return;
+    entry.target.poster = entry.target.dataset.poster;
+    posterObserver.unobserve(entry.target);
+  }), { rootMargin: "800px" });
+  document.querySelectorAll("video[data-poster]").forEach(v => posterObserver.observe(v));
+
   document.querySelectorAll("video[data-inview-play]").forEach(video => {
     if (reduceMotion) { video.controls = true; return; }
     new IntersectionObserver(([entry]) => {

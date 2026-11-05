@@ -8,70 +8,84 @@
   const finePointer = window.matchMedia("(pointer: fine)").matches;
 
   /* ---------------------------------------------------------
-     Content: menu (both languages)
-     TODO: "Drinky" and "Produkty" are placeholder items — replace with the real offer.
-     --------------------------------------------------------- */
-  const MENU = [
-    {
-      id: "kava", icon: "🔮", label: { cs: "Káva", en: "Coffee" },
-      items: [
-        { cs: ["Espresso čaroděje", "Silná, čistá, plná magie. Základ každého dobrého zaříkání."], en: ["Wizard's Espresso", "Strong, pure, full of magic. The base of every good spell."], price: "55 Kč" },
-        { cs: ["Cappuccino zatmění", "Klasické cappuccino s hustou pěnou posypanou kakaem jako noční obloha."], en: ["Eclipse Cappuccino", "Classic cappuccino with thick foam dusted with cocoa like a night sky."], price: "85 Kč" },
-        { cs: ["Latte z kouzelného háje", "Jemné mléčné latte s výběrovou kávou a kouzelným latte art vzorem."], en: ["Enchanted Grove Latte", "Smooth milky latte with specialty coffee and magical latte art."], price: "89 Kč" },
-        { cs: ["Horká čokoláda se šlehačkovou bouří", "Bohatá čokoláda s kopcem šlehačky, karamelem a jiskřivými ozdobami."], en: ["Hot Chocolate with a Cream Storm", "Rich chocolate with a mountain of whipped cream, caramel and sparkling toppings."], price: "129 Kč" },
-        { cs: ["Dračí latte", "Speciální latte s butterfly pea práškem — mění barvu jako pravý drak."], en: ["Dragon Latte", "A special latte with butterfly pea powder — it changes colour like a real dragon."], price: "115 Kč" },
-        { cs: ["Ledová magická káva", "Osvěžující cold brew s mlékem, karamelem a javorovým sirupem."], en: ["Iced Magic Coffee", "Refreshing cold brew with milk, caramel and maple syrup."], price: "99 Kč" },
-      ],
-    },
-    {
-      id: "drinky", icon: "🧪", label: { cs: "Drinky", en: "Drinks" },
-      items: [
-        { cs: ["Kouřící lektvar", "Barevný nealko lektvar v lektvarnici, zahalený v oblaku suchého ledu."], en: ["Smoking Potion", "A colourful alcohol-free potion served in a potion flask, wrapped in dry-ice fog."], price: "119 Kč" },
-        { cs: ["Elixír lesních víl", "Ovocný ledový čaj s lesním ovocem a mátou."], en: ["Forest Fairy Elixir", "Fruity iced tea with forest berries and mint."], price: "89 Kč" },
-        { cs: ["Domácí limonáda", "Osvěžující limonáda podle denní nálady našeho alchymisty."], en: ["House Lemonade", "A refreshing lemonade, made to our alchemist's mood of the day."], price: "79 Kč" },
-      ],
-    },
-    {
-      id: "dortiky", icon: "🍰", label: { cs: "Dortíky", en: "Cakes" },
-      items: [
-        { cs: ["Čarodějnický dort dne", "Čerstvý dort z naší kouzelné pekárny. Ptejte se obsluhy na dnešní variaci."], en: ["Witch's Cake of the Day", "A fresh cake from our magical bakery. Ask our staff about today's creation."], price: { cs: "od 89 Kč", en: "from 89 Kč" } },
-        { cs: ["Magický cheesecake", "Krémový cheesecake s kouzelnou toppingovou dekorací."], en: ["Magic Cheesecake", "Creamy cheesecake with an enchanted topping."], price: "109 Kč" },
-        { cs: ["Lektvarový brownie", "Tmavý, intenzivní čokoládový brownie jako přímo z černého kotle."], en: ["Potion Brownie", "Dark, intense chocolate brownie, straight from the black cauldron."], price: "75 Kč" },
-      ],
-    },
-    {
-      id: "kotlik", icon: "🫕", label: { cs: "Kotlík", en: "Cauldron" },
-      feature: {
-        cs: ["Magický kotlík se suchým ledem 🧪", "Při usazení vám přineseme náš legendární kouřící kotlík se suchým ledem. Vaše nápoje jsou servírovány v autentických lektvarnicích se spektakulárním kouřovým efektem — zážitek, na který se nezapomíná.", "✦ Při útratě nad 1 000 Kč obdržíte magický pohár ZDARMA"],
-        en: ["Magic Cauldron with Dry Ice 🧪", "Once you're seated, we bring you our legendary smoking cauldron with dry ice. Your drinks are served in authentic potion flasks with a spectacular smoke effect — an experience you won't forget.", "✦ Spend over 1,000 Kč and get a magic goblet FREE"],
-        photo: "assets/img/kotlik.jpg",
-        caption: { cs: "Lektvary dostupné v mnoha barvách a příchutích.", en: "Potions available in many colours and flavours." },
-      },
-    },
-    {
-      id: "produkty", icon: "🧙", label: { cs: "Produkty", en: "Products" },
-      items: [
-        { cs: ["Licencované produkty", "Hrnky, šály, hůlky a další poklady ze světa čar a kouzel. Aktuální nabídku najdete přímo v kavárně."], en: ["Licensed merchandise", "Mugs, scarves, wands and other treasures from the wizarding world. See the current range in the café."], price: { cs: "dle nabídky", en: "varies" } },
-        { cs: ["Magický pohár", "Sběratelský pohár, který si odnesete domů jako památku."], en: ["Magic Goblet", "A collectible goblet to take home as a keepsake."], price: { cs: "na dotaz", en: "on request" } },
-      ],
-    },
-  ];
-
-  /* ---------------------------------------------------------
      Content: static strings (EN). CZ is read from the HTML.
      --------------------------------------------------------- */
   const EN = {
-    "nav.about": "About", "nav.menu": "Menu", "nav.gallery": "Gallery", "nav.branches": "Contact", "nav.reservation": "Booking",
-    "hero.line1": "Where every cup", "hero.line2": "hides a spell", "hero.tag": "Magical café", "hero.cta": "Enter the world of magic",
-    "about.title": "— a place where<br>magic comes alive",
-    "about.p1": "Čarokavárna is a place where fairy-tale worlds meet the aroma of fresh coffee. Our café in Brno is full of magic — from smoking cauldrons of dry ice, through mysterious potions served in potion flasks, to cakes from another world.",
-    "about.p2": "Inspired by worlds of witchcraft and wizardry, we offer an experience for the whole family — magic you'll carry home in your heart. Come and see for yourself.",
-    "chip.coffee": "Specialty coffee", "chip.potions": "Smoking potions", "chip.cakes": "Magical cakes", "chip.products": "Licensed products",
-    "menu.note": "The menu may change with the daily offer. We're happy to advise you on site.",
-    "leaflet.title": "Magic menu", "leaflet.hint": "Move your mouse over the menu to reveal what it hides.",
+    "nav.about": "About", "nav.branches": "Contact", "nav.reservation": "Booking",
+    "nav.decor": "Decorations", "nav.leaflet": "Magic menu", "nav.unique": "What makes us different", "nav.faq": "FAQ",
+    "hero.line1": "Čarokavárna –", "hero.line2": "a place where magic comes alive and dreams come true.", "hero.tag": "Magical café", "hero.cta": "Enter the world of magic",
+    "about.title1": "We're not just a café.",
+    "about.title": "We're a small escape<br>from the hectic world.",
+    "about.p1": "A place that awakens the child in each of us. Come take a break from the everyday rush and step into a world of spells and magic.",
+    "about.p2": "Here you can leave your worries at the door and rediscover the honest joy and imagination of childhood.",
+    "about.p3": "At Čarokavárna we believe you're never too old for magic. So we created a place where, at least for a moment, you can return to your childhood, let our enchanting atmosphere carry you away and enjoy moments you'll remember with a smile.",
+    "chip.interior": "Interior", "chip.decor": "Decorations",
+    "decor.title1": "Unique decorations", "decor.title2": "you won't see anywhere else",
+    "decor.p1": "At Čarokavárna we take pride in originality and uniqueness. Our decorations aren't just ordinary interior accessories. They are one-of-a-kind pieces made to order, with attention to every detail. Many of them are even life-sized, so you can enjoy the magical world quite literally within arm's reach.",
+    "decor.p2": "We keep improving Čarokavárna and taking it further. Since it opened, the interior has gone through a big transformation and has gradually filled up with all kinds of decorations, each with its own soul and story.",
+    "leaflet.title1": "A wizard's menu", "leaflet.title2": "you conjure up yourself",
+    "leaflet.p1": "Here at Čarokavárna we can turn even ordinary things into something extraordinary.",
+    "leaflet.p2": "That's why you won't get just any old menu. Ours is magical, and it carefully guards its contents from the eyes of all muggles.",
+    "leaflet.p3": "A true wizard has to conjure up their own menu! Just take our special magic wand in your hand and reveal the secrets hidden on its pages.",
+    "leaflet.p4": "And believe us — truly anyone can master this spell! ✨",
+    "chip.leaflet": "Magic menu", "chip.cakes": "Magical desserts", "chip.potions": "Potions & elixirs", "chip.rental": "To borrow", "chip.special": "Also worth a mention", "chip.unique": "What makes us different?", "chip.winter": "Winter menu", "chip.faq": "FAQ",
+    "faq.title1": "Frequently asked", "faq.title2": "questions",
+    "faq.q1": "Can children come too?",
+    "faq.a1": "<p>Of course! ❤️ Čarokavárna is open to little and grown-up wizards alike, and there's no age limit. You're welcome to come with a pram, too.</p>",
+    "faq.q2": "Can I buy a gift voucher?",
+    "faq.a2": "<p>Yes! At Čarokavárna we offer gift vouchers worth 500 CZK and 1,000 CZK, depending on current availability.</p><p>Vouchers can only be bought in person, right at Čarokavárna. Unfortunately, we don't sell or send vouchers online.</p>",
+    "faq.q3": "Are dogs allowed?",
+    "faq.a3": "<p>Unfortunately not. Dogs aren't allowed anywhere in the arcade where Čarokavárna is located. Thank you for understanding.</p>",
+    "faq.q4": "Are the wizard cloaks and other props free to borrow?",
+    "faq.a4": "<p>Yes! All the props we lend out are completely free. Whether it's wizard cloaks, hats, masks, wands or board games, you can try everything during your visit at no charge.</p>",
+    "faq.q5": "Is there an entrance fee?",
+    "faq.a5": "<p>No, there's no entrance fee. You only pay for what you order.</p>",
+    "faq.q6": "Do I need a reservation?",
+    "faq.a6": "<p>On weekends, public holidays and during school holidays we strongly recommend booking, as we're often full.</p><p>On weekdays outside holidays you usually don't need a reservation, but if you want to be sure of a table, we recommend booking one.</p>",
+    "faq.q7": "Can we come without a reservation?",
+    "faq.a7": "<p>Of course! We keep four tables reserved for guests without a booking.</p><p>On weekends, public holidays and during school holidays they may all be taken, though. In that case, just wait a little while until one frees up.</p><p>On weekdays outside holidays you'll usually get in without a reservation and without waiting.</p>",
+    "faq.q8": "How long can I book a table for?",
+    "faq.a8": "<p>A standard reservation lasts one hour. If you'd like to enjoy the magical atmosphere longer, you can also book the next time slot.</p>",
+    "faq.q9": "Do you have gluten-free and lactose-free desserts?",
+    "faq.a9": "<p>Yes, we do! Fresh gluten-free and lactose-free desserts are delivered every Tuesday, Wednesday and Friday.</p><p>Sometimes a few are left for the following day, but on those days you can be most sure to find them.</p>",
+    "faq.q10": "Do you decorate tables for birthdays?",
+    "faq.a10": "<p>Unfortunately, we can't provide birthday table decorations due to capacity reasons.</p><p>But we're happy to make your birthday a little more special! We can put a birthday candle in a dessert of your choice and light it for you.</p>",
+    "winter.badge": "Seasonal offer · limited time only",
+    "winter.title1": "Even winter at Čarokavárna", "winter.title2": "has its magic! 🧣",
+    "winter.p1": "We've prepared a special selection of winter drinks to warm you up, cheer you up and make the cold days more pleasant.",
+    "winter.p2": "We'll give you a little taste in the photos — but what our winter specials really hide? That you'll have to come and discover yourself!",
+    "unique.title1": "What makes Čarokavárna", "unique.title2": "special?",
+    "unique.p1": "At Čarokavárna we take pride in originality, unique details and above all in experiences you won't find just anywhere. So what makes us special?",
+    "unique.f1.title": "A wizard's menu", "unique.f1.text": "Forget ordinary drinks menus! Here you have to conjure up your menu yourself.",
+    "unique.f2.title": "Unique decorations", "unique.f2.text": "Original made-to-order decorations, many of them life-sized. Each one has its own soul and story.",
+    "unique.f3.title": "A sugar cloud that sweetens your coffee", "unique.f3.text": "Our Čarokavárna special! A lungo with a little sugar cloud that melts in the rising steam and rains sweetly right into your cup.",
+    "unique.f4.title": "Wizard props and masks", "unique.f4.text": "Here you can become part of the magical world! Borrow cloaks, hats, wands or original masks and have a bit of fun.",
+    "unique.f5.title": "Something new every time", "unique.f5.text": "We keep improving Čarokavárna, adding new decorations and coming up with more ideas. So every visit you can discover something new.",
+    "special.title1": "Čarokavárna special –", "special.title2": "a sugar cloud that sweetens your coffee ☁️",
+    "special.p1": "A lungo with a fluffy cotton-candy cloud that slowly melts in the steam rising from the hot coffee and starts to rain sweetly into your cup.",
+    "paintings.title": "Magic paintings 🪄",
+    "paintings.p1": "Hardly anyone notices at first glance. But did you know the paintings behind our bar aren't entirely ordinary?",
+    "paintings.p2": "Look closely, and you'll find that they move.",
+    "chest.title":"The magic chest 🗝️",
+    "chest.p1": "Dare to solve our enchanted riddle? If you manage it, the treasure from the magic chest could be yours!",
+    "chest.p2": "And don't worry, our treasures aren't just for little wizards. Kids and grown-ups alike will find something for themselves.",
+    "special.p2":"A coffee experience you'll only find here!",
+    "rental.title1": "You won't", "rental.title2": "get bored here…",
+    "rental.p1": "To make your Čarokavárna experience even more intense, you can borrow our wizard cloaks, hats, wands or themed glasses.",
+    "rental.p2": "And if you're up for a bit of fun, you can play board games or fool around in our original masks, which you can borrow in our photo corner by the platform.",
+    "potions.title1": "Enchanting potions", "potions.title2": "for young and grown-up wizards",
+    "potions.p1": "We serve our potions in original themed glasses with a smoking effect. Every potion has its own unique glass that completes the whole magical experience.",
+    "potions.p2": "You'll find both alcoholic and non-alcoholic potions that will enchant you from the very first sip.",
+    "lemonade.title1": "And we have lemonades", "lemonade.title2": "from the magic forest, too.",
+    "lemonade.p1": "We make our homemade lemonades ourselves from fresh fruit.",
+    "potions.p3":"We change our selection regularly, so after the New Year you can look forward to exciting new additions.",
+    "cakes.title1": "Magic desserts", "cakes.title2": "that delight more than just your eyes…",
+    "cakes.p1": "At Čarokavárna we take pride in a varied selection of original, themed treats that will enchant you not only with their looks but with their taste too.",
+    "cakes.p2": "We change our selection regularly, so every visit you can discover and taste something new.",
+    "cakes.p3": "And our selection also includes gluten-free and lactose-free desserts. 🌿",
+    "cakes.p4": "Here is a small sample of our magical treats. ✨",
+    "leaflet.hint": "Move your mouse over the menu to reveal what it hides.",
     "leaflet.hintWand": "Follow the magic wand — it reveals what the menu hides.",
-    "gallery.title1": "Take a look", "gallery.title2": "inside",
-    "gallery.c1": "Hot chocolate", "gallery.c2": "Smoking potions", "gallery.c3": "Interior", "gallery.c4": "Our menu",
     "branches.title": "Where to find us",
     "branches.brnoArea": "Brno city centre", "branches.map": "Show on map →",
     "days.tueSun": "Tue – Sun", "days.mon": "Monday", "days.closed": "Closed",
@@ -106,8 +120,6 @@
       if (v != null) el.innerHTML = v;
     });
     document.querySelectorAll("[data-lang-toggle]").forEach(b => { b.textContent = lang === "en" ? "CZ" : "EN"; });
-    renderTabs();
-    renderMenu();
   }
 
   document.querySelectorAll("[data-lang-toggle]").forEach(btn => btn.addEventListener("click", () => {
@@ -115,86 +127,6 @@
     try { localStorage.setItem("lang", lang); } catch (e) { /* storage unavailable */ }
     applyLang();
   }));
-
-  /* ---------------------------------------------------------
-     Menu tabs
-     --------------------------------------------------------- */
-  const tabsEl = document.querySelector(".tabs");
-  const panelEl = document.getElementById("menu-panel");
-  let activeTab = MENU[0].id;
-
-  const esc = s => s.replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
-
-  function renderTabs() {
-    tabsEl.innerHTML = MENU.map(cat => `
-      <button class="tab" type="button" role="tab" id="tab-${cat.id}" data-tab="${cat.id}"
-        aria-selected="${cat.id === activeTab}" aria-controls="menu-panel" tabindex="${cat.id === activeTab ? 0 : -1}">
-        <span aria-hidden="true">${cat.icon}</span>${esc(cat.label[lang])}
-      </button>`).join("");
-  }
-
-  function renderMenu() {
-    const cat = MENU.find(c => c.id === activeTab);
-    panelEl.setAttribute("aria-labelledby", `tab-${cat.id}`);
-
-    if (cat.feature) {
-      const [title, text, perk] = cat.feature[lang];
-      panelEl.innerHTML = `
-        <div class="menu-grid">
-          <article class="menu-card menu-card--feature">
-            <h3>${esc(title)}</h3>
-            <p>${esc(text)}</p>
-            <p class="perk">${esc(perk)}</p>
-          </article>
-          <article class="menu-card menu-card--photo" style="--i:1">
-            <img src="${cat.feature.photo}" alt="" loading="lazy">
-            <p>${esc(cat.feature.caption[lang])}</p>
-          </article>
-        </div>`;
-      return;
-    }
-
-    panelEl.innerHTML = `<div class="menu-grid">${cat.items.map((item, i) => {
-      const [name, desc] = item[lang];
-      return `
-        <article class="menu-card" style="--i:${i}">
-          <h3>${esc(name)}</h3>
-          <p>${esc(desc)}</p>
-          <p class="price">${esc(pick(item.price))}</p>
-        </article>`;
-    }).join("")}</div>`;
-  }
-
-  // Switch tab: old cards dissolve, then the new ones materialise (see card-out / card-in in CSS)
-  let tabSwitch = 0;
-  function selectTab(id, animate = true) {
-    if (id === activeTab || !MENU.some(c => c.id === id)) return;
-    activeTab = id;
-    renderTabs();
-    panelEl.classList.remove("rise-in");
-    const token = ++tabSwitch;
-    if (!animate || reduceMotion) { renderMenu(); return; }
-    panelEl.classList.add("is-leaving");
-    setTimeout(() => {
-      if (token !== tabSwitch) return;           // a newer switch took over
-      panelEl.classList.remove("is-leaving");
-      renderMenu();
-    }, 260);
-  }
-
-  tabsEl.addEventListener("click", e => {
-    const btn = e.target.closest("[data-tab]");
-    if (!btn || btn.dataset.tab === activeTab) return;
-    selectTab(btn.dataset.tab);
-    tabsEl.querySelector(`[data-tab="${activeTab}"]`).focus();
-  });
-
-  tabsEl.addEventListener("keydown", e => {
-    if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
-    const i = MENU.findIndex(c => c.id === activeTab);
-    const next = MENU[(i + (e.key === "ArrowRight" ? 1 : -1) + MENU.length) % MENU.length];
-    tabsEl.querySelector(`[data-tab="${next.id}"]`).click();
-  });
 
   /* ---------------------------------------------------------
      Navigation: scrolled state, progress bar, active link, burger
@@ -218,7 +150,8 @@
   const sectionObserver = new IntersectionObserver(entries => {
     entries.forEach(entry => {
       if (!entry.isIntersecting) return;
-      navLinks.forEach(a => a.classList.toggle("is-active", a.getAttribute("href") === `#${entry.target.id}`));
+      const id = entry.target.dataset.navFor || entry.target.id;   // data-nav-for: section shares another's link
+      navLinks.forEach(a => a.classList.toggle("is-active", a.getAttribute("href") === `#${id}`));
     });
   }, { rootMargin: "-45% 0px -50% 0px" });
   document.querySelectorAll("main section[id]").forEach(s => sectionObserver.observe(s));
@@ -266,8 +199,6 @@
   }, { threshold: 0.12, rootMargin: "0px 0px -40px 0px" });
   document.querySelectorAll(".reveal").forEach(el => revealObserver.observe(el));
 
-  // Menu cards wait hidden until the menu section rises (see .rise-pending / .rise-in in CSS)
-  if (!reduceMotion) panelEl.classList.add("rise-pending");
 
   /* ---------------------------------------------------------
      Gallery lightbox
@@ -280,7 +211,8 @@
   document.body.appendChild(lightbox);
   const lbImg = lightbox.querySelector("img");
 
-  document.querySelectorAll(".gallery__item").forEach(item => {
+  document.querySelectorAll(".carousel__slide, .duo__photo").forEach(item => {
+    if (!item.querySelector("img")) return;   // photo placeholders have nothing to enlarge
     item.tabIndex = 0;
     const open = () => {
       const img = item.querySelector("img");
@@ -292,6 +224,62 @@
     item.addEventListener("click", open);
     item.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); open(); } });
   });
+  /* ---------------------------------------------------------
+     Photo carousels (interior in O nás, Dekorace) — native scroll-snap does the swiping;
+     this keeps the counter and arrow buttons in sync with it
+     --------------------------------------------------------- */
+  document.querySelectorAll(".carousel").forEach(carousel => {
+    const track = carousel.querySelector(".carousel__track");
+    const slides = [...track.children];
+    const countEl = carousel.querySelector(".carousel__count b");
+    const [prevBtn, nextBtn] = carousel.querySelectorAll(".carousel__btn");
+    const pad = n => String(n).padStart(2, "0");
+    carousel.querySelector(".carousel__total").textContent = pad(slides.length);   // total follows the slides in the HTML
+    const step = () => slides.length > 1 ? slides[1].offsetLeft - slides[0].offsetLeft : track.clientWidth;
+    const current = () => Math.round(track.scrollLeft / step());
+
+    const sync = () => {
+      const atEnd = track.scrollLeft >= track.scrollWidth - track.clientWidth - 2;
+      // with several photos in view the row stops before the last one reaches the left edge — count it as the last
+      const i = atEnd ? slides.length - 1 : Math.min(current(), slides.length - 1);
+      countEl.textContent = pad(i + 1);
+      prevBtn.disabled = track.scrollLeft <= 2;
+      nextBtn.disabled = atEnd;
+      carousel.classList.toggle("is-static", track.scrollWidth <= track.clientWidth + 2);   // everything fits → no arrows
+    };
+    // while a smooth scroll is still running, the next click counts from where it's heading,
+    // not from where the row happens to be, so quick clicks never get swallowed
+    let raf = 0, pending = null, settle = 0;
+    track.addEventListener("scroll", () => {
+      cancelAnimationFrame(raf); raf = requestAnimationFrame(sync);
+      clearTimeout(settle); settle = setTimeout(() => { pending = null; }, 160);
+    }, { passive: true });
+    window.addEventListener("resize", sync);
+    carousel.querySelectorAll(".carousel__btn").forEach(btn =>
+      btn.addEventListener("click", () => {
+        const from = pending ?? current();
+        // the furthest the row can actually go (with several photos in view it stops before the last one)
+        const last = Math.min(slides.length - 1, Math.round((track.scrollWidth - track.clientWidth) / step()));
+        pending = Math.max(0, Math.min(last, from + Number(btn.dataset.step)));
+        track.scrollTo({ left: slides[pending].offsetLeft - slides[0].offsetLeft, behavior: reduceMotion ? "auto" : "smooth" });
+      }));
+    sync();
+  });
+
+  /* ---------------------------------------------------------
+     Videos (cukrový mrak, first slides of the interior and dessert carousels) — load only
+     when about to be seen, loop silently while visible (a carousel slide scrolled aside
+     counts as hidden) and pause otherwise; with reduced motion they wait for a click
+     --------------------------------------------------------- */
+  document.querySelectorAll("video[data-inview-play]").forEach(video => {
+    if (reduceMotion) { video.controls = true; return; }
+    new IntersectionObserver(([entry]) => {
+      // autoplay blocked (e.g. data-saver) → show controls; other rejections are just a play() cut short by pause()
+      if (entry.isIntersecting) video.play().catch(err => { if (err.name === "NotAllowedError") video.controls = true; });
+      else video.pause();
+    }, { threshold: 0.35 }).observe(video);
+  });
+
   const closeLightbox = () => lightbox.classList.remove("is-open");
   lightbox.addEventListener("click", closeLightbox);
   document.addEventListener("keydown", e => { if (e.key === "Escape") { closeLightbox(); closeNav(); } });
@@ -446,78 +434,8 @@
     }, { passive: true });
     document.addEventListener("pointerleave", () => { lastX = null; });
 
-    document.querySelectorAll(".btn, .chip, .logo, .tab").forEach(el =>
+    document.querySelectorAll(".btn, a.chip, .logo").forEach(el =>
       el.addEventListener("pointerenter", e => { if (e.pointerType === "mouse") burst(e.clientX, e.clientY, 10); }));
-  }
-
-  /* ---------------------------------------------------------
-     Instagram — live feed via Behold (behold.so)
-     - Fetched only when the section is about to scroll into view
-     - Cached in the visitor's browser for 12 h, so reloads/repeat visits
-       don't use up the monthly view quota
-     - Any failure (no URL, quota reached, offline) keeps the static photos
-     --------------------------------------------------------- */
-  const igSection = document.getElementById("instagram");
-  const igGrid = document.querySelector("[data-ig-grid]");
-  const feedUrl = igSection && igSection.dataset.beholdFeed.trim();
-  const IG_CACHE_KEY = "ig-feed-v1";
-  const IG_CACHE_TTL = 12 * 60 * 60 * 1000;
-  const IG_MAX_POSTS = 6;
-
-  const readIgCache = () => {
-    try {
-      const c = JSON.parse(localStorage.getItem(IG_CACHE_KEY));
-      if (c && c.url === feedUrl && Date.now() - c.t < IG_CACHE_TTL) return c.posts;
-    } catch (e) { /* storage unavailable */ }
-    return null;
-  };
-  const writeIgCache = posts => {
-    try { localStorage.setItem(IG_CACHE_KEY, JSON.stringify({ url: feedUrl, t: Date.now(), posts })); } catch (e) { /* storage unavailable */ }
-  };
-
-  // Behold returns either { posts: [...] } or a bare array depending on feed version
-  const normalizePosts = data => (Array.isArray(data) ? data : (data && data.posts) || [])
-    .map(p => ({
-      href: p.permalink,
-      src: (p.sizes && p.sizes.medium && p.sizes.medium.mediaUrl)
-        || (p.mediaType === "VIDEO" ? p.thumbnailUrl : p.mediaUrl)
-        || p.thumbnailUrl,
-      alt: (p.prunedCaption || p.caption || "").replace(/\s+/g, " ").slice(0, 120) || "Příspěvek na Instagramu",
-    }))
-    .filter(p => p.href && p.src)
-    .slice(0, IG_MAX_POSTS);
-
-  function renderIg(posts) {
-    if (!posts || !posts.length) return;
-    igGrid.innerHTML = posts.map(p => `
-      <a href="${esc(p.href)}" target="_blank" rel="noopener">
-        <img src="${esc(p.src)}" alt="${esc(p.alt)}" loading="lazy">
-      </a>`).join("");
-  }
-
-  async function loadIg() {
-    const cached = readIgCache();
-    if (cached) { renderIg(cached); return; }
-    igGrid.classList.add("is-loading");
-    try {
-      const res = await fetch(feedUrl);
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const posts = normalizePosts(await res.json());
-      if (posts.length) { renderIg(posts); writeIgCache(posts); }
-    } catch (err) {
-      console.warn("Instagram feed unavailable, showing static photos.", err);
-    } finally {
-      igGrid.classList.remove("is-loading");
-    }
-  }
-
-  if (feedUrl && igGrid) {
-    const igObserver = new IntersectionObserver(([entry]) => {
-      if (!entry.isIntersecting) return;
-      igObserver.disconnect();
-      loadIg();
-    }, { rootMargin: "400px 0px" });
-    igObserver.observe(igSection);
   }
 
   /* ---------------------------------------------------------
@@ -557,7 +475,7 @@
   // Soft light following the cursor over cards (position fed to CSS via --mx / --my)
   if (!reduceMotion) {
     document.addEventListener("pointermove", e => {
-      const card = e.target.closest && e.target.closest(".menu-card, .branch");
+      const card = e.target.closest && e.target.closest(".branch");
       if (!card) return;
       const r = card.getBoundingClientRect();
       card.style.setProperty("--mx", `${e.clientX - r.left}px`);
@@ -741,9 +659,6 @@
     }).observe(el);
   }
 
-  // Chips in "O nás" link to #menu — open the matching tab before the smooth scroll arrives
-  document.querySelectorAll("[data-open-tab]").forEach(link =>
-    link.addEventListener("click", () => selectTab(link.dataset.openTab, false)));
 
   // Sections rise up out of a bank of clouds: each section gets a cloud layer that
   // parts and dissolves the first time the section scrolls into view
@@ -755,9 +670,6 @@
         section.classList.add("is-risen");
         cloudObserver.unobserve(section);
         revealBatch([...inView].filter(el => section.contains(el)));
-        if (section.contains(panelEl) && panelEl.classList.contains("rise-pending")) {
-          panelEl.classList.replace("rise-pending", "rise-in");
-        }
       });
     }, { rootMargin: "0px 0px -30% 0px" });
     document.querySelectorAll("main .section").forEach(section => {

@@ -11,7 +11,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Jost:wght@400;500&display=swap" rel="stylesheet">
   <!-- ?v= busts stale caches (in-app browsers like Messenger hold on to old files) — bump it on every deploy that changes CSS/JS -->
-  <link rel="stylesheet" href="css/style.css?v=20261105">
+  <link rel="stylesheet" href="css/style.css?v=20261105f">
 </head>
 <body class="is-loading">
 
@@ -82,7 +82,7 @@
           <em data-i18n="hero.line1">Čarokavárna –</em>
           <span data-i18n="hero.line2">místo, kde magie ožívá a&nbsp;sny se plní.</span>
         </h1>
-        <p class="hero__sub"><span aria-hidden="true">✦</span> Brno · <span data-i18n="hero.tag">Magická kavárna</span> <span aria-hidden="true">✦</span></p>
+        <p class="hero__sub"><span aria-hidden="true">✦</span> <span data-i18n="hero.tag">Brno, magické místo</span> <span aria-hidden="true">✦</span></p>
         <a class="btn btn--outline hero__cta" href="#o-nas" data-i18n="hero.cta">Vstupte do světa kouzel</a>
       </div>
 
@@ -293,21 +293,17 @@
           </svg>
         </button>
         <!-- carousel: swipe / scroll-snap track, arrows + counter; a click opens the photo in the lightbox -->
-        <div class="about__photo carousel reveal" role="region" aria-roledescription="carousel" aria-label="Interiér Čarokavárny">
+        <div class="about__photo carousel carousel--burn reveal" role="region" aria-roledescription="carousel" aria-label="Interiér Čarokavárny">
           <div class="carousel__track" tabindex="0">
             <figure class="carousel__slide framed"><video src="assets/video/interier-pruchod.mp4" data-poster="assets/video/interier-pruchod-poster.jpg" width="720" height="1280" muted loop playsinline preload="none" data-inview-play aria-label="Procházka Čarokavárnou — drak, popínavé rostliny, dráček a mlha ze suchého ledu"></video></figure>
             <figure class="carousel__slide framed"><img src="assets/img/interier/01-vstup-sova.jpg" alt="Cihlová stěna s logem Čarokavárny, sněžná sova a kufry na vozíku v mlze" loading="lazy"></figure>
-            <figure class="carousel__slide framed"><img src="assets/img/interier/02-koutek-krb.jpg" alt="Kouzelný koutek s křeslem, krbem a poletujícími dopisy" loading="lazy" style="object-position: 42% 50%"></figure>
-            <figure class="carousel__slide framed"><img src="assets/img/interier/03-kreslo-dopisy.jpg" alt="Zelené křeslo pod lampou, stěna plná kouzelnických cedulí" loading="lazy"></figure>
-            <figure class="carousel__slide framed"><img src="assets/img/interier/04-koutek-mlha.jpg" alt="Koutek s křeslem a krbem zahalený v mlze ze suchého ledu" loading="lazy"></figure>
-            <figure class="carousel__slide framed"><img src="assets/img/interier/05-salonek-svicen.jpg" alt="Tajemný salonek se svícnem na stole a obrazy hradů na stěnách" loading="lazy"></figure>
-            <figure class="carousel__slide framed"><img src="assets/img/interier/06-brana-ruze.jpg" alt="Zlatá brána obrostlá růžemi s výhledem do kavárny" loading="lazy"></figure>
-            <figure class="carousel__slide framed"><img src="assets/img/interier/07-hlavni-sal.jpg" alt="Hlavní sál pod popínavými rostlinami, s drakem a mlhou na podlaze" loading="lazy"></figure>
-            <figure class="carousel__slide framed"><img src="assets/img/interier/08-logo-zed.jpg" alt="Logo Čarokavárny na cihlové zdi vedle cedule nástupiště" loading="lazy" style="object-position: 8% 50%"></figure>
-            <figure class="carousel__slide framed"><img src="assets/img/interier/09-koste-lampy.jpg" alt="Létající koště pod hvězdným stropem mezi lucernami" loading="lazy" style="object-position: 45% 50%"></figure>
-            <figure class="carousel__slide framed"><img src="assets/img/interier/10-nebe-koste.jpg" alt="Pohled vzhůru na noční nebe s měsícem, koštětem a kruhem luceren" loading="lazy"></figure>
-            <figure class="carousel__slide framed"><img src="assets/img/interier/11-strom-carodej.jpg" alt="Kouzelný strom obrostlý mechem a růžemi, v pozadí čaroděj a police plné drobností" loading="lazy"></figure>
-            <figure class="carousel__slide framed"><img src="assets/img/interier/12-mraky-drak.jpg" alt="Sál pod oblaky s levitujícími svíčkami, rudý drak a vlkodlak v mlze" loading="lazy"></figure>
+            <figure class="carousel__slide framed"><img src="assets/img/interier/02-kreslo-dopisy.jpg" alt="Zelené křeslo pod lampou, stěna plná kouzelnických cedulí" loading="lazy"></figure>
+            <figure class="carousel__slide framed"><img src="assets/img/interier/03-salonek-svicen.jpg" alt="Tajemný salonek se svícnem na stole a obrazy hradů na stěnách" loading="lazy"></figure>
+            <figure class="carousel__slide framed"><img src="assets/img/interier/04-brana-ruze.jpg" alt="Zlatá brána obrostlá růžemi s výhledem do kavárny" loading="lazy"></figure>
+            <figure class="carousel__slide framed"><img src="assets/img/interier/05-hlavni-sal.jpg" alt="Hlavní sál pod popínavými rostlinami, s drakem a mlhou na podlaze" loading="lazy"></figure>
+            <figure class="carousel__slide framed"><img src="assets/img/interier/06-nebe-koste.jpg" alt="Pohled vzhůru na noční nebe s měsícem, koštětem a kruhem luceren" loading="lazy"></figure>
+            <figure class="carousel__slide framed"><img src="assets/img/interier/07-strom-carodej.jpg" alt="Kouzelný strom obrostlý mechem a růžemi, v pozadí čaroděj a police plné drobností" loading="lazy"></figure>
+            <figure class="carousel__slide framed"><img src="assets/img/interier/08-mraky-drak.jpg" alt="Sál pod oblaky s levitujícími svíčkami, rudý drak a vlkodlak v mlze" loading="lazy"></figure>
           </div>
           <div class="carousel__controls">
             <button class="carousel__btn" type="button" data-step="-1" aria-label="Předchozí fotka">
@@ -325,34 +321,30 @@
     <!-- ===== Dekorace ===== -->
     <section class="section section--decor" id="dekorace">
       <div class="container">
-        <div class="split-intro">
-          <h2 class="title reveal">
+        <div class="duo duo--gallery">
+          <div class="duo__text">
+            <h2 class="title reveal">
             <em data-i18n="decor.title1">Jedinečné dekorace,</em><br>
-            <span data-i18n="decor.title2">které jinde neuvidíte</span>
+            <span data-i18n="decor.title2">které jinde nenajdete.</span>
           </h2>
-          <div class="split-intro__text">
             <p class="lead reveal" data-i18n="decor.p1">V&nbsp;Čarokavárně si zakládáme na originalitě a&nbsp;výjimečnosti. Naše dekorace nejsou jen obyčejnými doplňky interiéru. Jsou to jedinečné kousky, které vznikají na zakázku, s&nbsp;důrazem na každý detail. Mnohé z&nbsp;nich jsou navíc v&nbsp;životní velikosti, takže si můžete kouzelný svět vychutnat doslova na dosah ruky.</p>
             <p class="lead reveal" data-i18n="decor.p2">Čarokavárnu se neustále snažíme zdokonalovat a&nbsp;posouvat dál. Od jejího otevření prošel interiér velkou proměnou a&nbsp;postupně se zaplnil nejrůznějšími dekoracemi, z&nbsp;nichž každá má svou vlastní duši a&nbsp;příběh.</p>
           </div>
-        </div>
 
-        <div class="carousel carousel--multi reveal" role="region" aria-roledescription="carousel" aria-label="Dekorace Čarokavárny">
+        <div class="carousel carousel--burn reveal" role="region" aria-roledescription="carousel" aria-label="Dekorace Čarokavárny">
           <div class="carousel__track" tabindex="0">
             <figure class="carousel__slide framed"><img src="assets/img/dekorace/01-carodej.jpg" alt="Socha čaroděje v modré čepici s holí a knihou kouzel" loading="lazy"></figure>
             <figure class="carousel__slide framed"><img src="assets/img/dekorace/02-vlkodlak-logo.jpg" alt="Vlkodlak v životní velikosti před cihlovou zdí s logem Čarokavárny" loading="lazy"></figure>
             <figure class="carousel__slide framed"><img src="assets/img/dekorace/03-drak-mraky.jpg" alt="Hlava rudého draka vylézající z oblaků u stropu" loading="lazy"></figure>
             <figure class="carousel__slide framed"><img src="assets/img/dekorace/04-brana-ruze.jpg" alt="Zlatá brána obrostlá růžemi s výhledem do kavárny" loading="lazy"></figure>
-            <figure class="carousel__slide framed"><img src="assets/img/dekorace/05-vlkodlak-detail.jpg" alt="Detail vrčícího vlkodlaka s vyceněnými tesáky" loading="lazy"></figure>
-            <figure class="carousel__slide framed"><img src="assets/img/dekorace/06-dracek-okno.jpg" alt="Zelený dráček s obojkem sedící u okna pod lampou" loading="lazy"></figure>
-            <figure class="carousel__slide framed"><img src="assets/img/dekorace/07-vlkodlak-pozor-kouse.jpg" alt="Vlkodlak na pařezu pod cedulí „Pozor, kouše“" loading="lazy"></figure>
-            <figure class="carousel__slide framed"><img src="assets/img/dekorace/08-dracek-les.jpg" alt="Usměvavý dráček v mlze před malbou kouzelného lesa" loading="lazy"></figure>
-            <figure class="carousel__slide framed"><img src="assets/img/dekorace/09-carodej-sklo.jpg" alt="Čaroděj s dlouhým vousem za sklem výlohy" loading="lazy"></figure>
-            <figure class="carousel__slide framed"><img src="assets/img/dekorace/10-chrlic.jpg" alt="Kamenný chrlič na cihlové zdi" loading="lazy"></figure>
-            <figure class="carousel__slide framed"><img src="assets/img/dekorace/11-demon.jpg" alt="Rudý démon s rohy před stěnou plnou alchymistických nákresů" loading="lazy"></figure>
-            <figure class="carousel__slide framed"><img src="assets/img/dekorace/12-trihlavy-pes.jpg" alt="Tříhlavý pes se slintajícími tlamami" loading="lazy"></figure>
-            <figure class="carousel__slide framed"><img src="assets/img/dekorace/13-dracek-vykukuje.jpg" alt="Dráček vykukující zpoza stromu v kouzelném lese" loading="lazy"></figure>
-            <figure class="carousel__slide framed"><img src="assets/img/dekorace/14-vlkodlak-portret.jpg" alt="Portrét vlkodlaka, v pozadí cedule „Pozor, kouše“" loading="lazy"></figure>
-            <figure class="carousel__slide framed"><img src="assets/img/dekorace/15-sova.jpg" alt="Sněžná sova na pařezu porostlém mechem a muchomůrkami" loading="lazy"></figure>
+            <figure class="carousel__slide framed"><img src="assets/img/dekorace/05-vlkodlak-pozor-kouse.jpg" alt="Vlkodlak na pařezu pod cedulí „Pozor, kouše“" loading="lazy"></figure>
+            <figure class="carousel__slide framed"><img src="assets/img/dekorace/06-dracek-les.jpg" alt="Usměvavý dráček v mlze před malbou kouzelného lesa" loading="lazy"></figure>
+            <figure class="carousel__slide framed"><img src="assets/img/dekorace/07-carodej-sklo.jpg" alt="Čaroděj s dlouhým vousem za sklem výlohy" loading="lazy"></figure>
+            <figure class="carousel__slide framed"><img src="assets/img/dekorace/08-chrlic.jpg" alt="Kamenný chrlič na cihlové zdi" loading="lazy"></figure>
+            <figure class="carousel__slide framed"><img src="assets/img/dekorace/09-demon.jpg" alt="Rudý démon s rohy před stěnou plnou alchymistických nákresů" loading="lazy"></figure>
+            <figure class="carousel__slide framed"><img src="assets/img/dekorace/10-trihlavy-pes.jpg" alt="Tříhlavý pes se slintajícími tlamami" loading="lazy"></figure>
+            <figure class="carousel__slide framed"><img src="assets/img/dekorace/11-vlkodlak-portret.jpg" alt="Portrét vlkodlaka, v pozadí cedule „Pozor, kouše“" loading="lazy"></figure>
+            <figure class="carousel__slide framed"><img src="assets/img/dekorace/12-sova.jpg" alt="Sněžná sova na pařezu porostlém mechem a muchomůrkami" loading="lazy"></figure>
           </div>
           <div class="carousel__controls">
             <button class="carousel__btn" type="button" data-step="-1" aria-label="Předchozí fotka">
@@ -363,6 +355,7 @@
               <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="M3 8h11M9 3l5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.2"/></svg>
             </button>
           </div>
+        </div>
         </div>
       </div>
     </section>
@@ -375,9 +368,22 @@
         <div class="split-intro">
           <h2 class="title reveal">
             <em data-i18n="leaflet.title1">Kouzelnické menu,</em><br>
-            <span data-i18n="leaflet.title2">které si sami vyčarujete</span>
+            <span data-i18n="leaflet.title2">které si sami vyčarujete.</span>
           </h2>
           <div class="split-intro__text">
+            <!-- "Jen u nás" stamp in the text's top-right corner; the paragraphs wrap around it (decorative) -->
+            <svg class="stamp reveal" viewBox="0 0 200 200" aria-hidden="true">
+              <defs>
+                <path id="stamp-ring" d="M100 100 m-71 0 a71 71 0 1 1 142 0 a71 71 0 1 1 -142 0"/>
+              </defs>
+              <circle cx="100" cy="100" r="93" class="stamp__line stamp__line--bold"/>
+              <circle cx="100" cy="100" r="86" class="stamp__line"/>
+              <circle cx="100" cy="100" r="56" class="stamp__line"/>
+              <text class="stamp__ring"><textPath href="#stamp-ring" textLength="438" lengthAdjust="spacing">✦ ČAROKAVÁRNA ✦ BRNO ✦ ČAROKAVÁRNA ✦ BRNO</textPath></text>
+              <text class="stamp__word" x="100" y="94" data-i18n="stamp.l1">Jen</text>
+              <text class="stamp__word" x="100" y="124" data-i18n="stamp.l2">u nás</text>
+              <text class="stamp__star" x="100" y="144">✦</text>
+            </svg>
             <p class="lead reveal" data-i18n="leaflet.p1">U&nbsp;nás v&nbsp;Čarokavárně dokážeme i&nbsp;z&nbsp;obyčejných věcí udělat něco neobyčejného.</p>
             <p class="lead reveal" data-i18n="leaflet.p2">Proto u&nbsp;nás nedostanete jen tak ledajaké menu. To naše je totiž kouzelné a&nbsp;svůj obsah pečlivě střeží před zraky všech mudlů.</p>
             <p class="lead reveal" data-i18n="leaflet.p3">Pravý čaroděj si své menu musí vyčarovat sám! Stačí vzít do ruky naši speciální čarohůlku a&nbsp;odhalit tajemství ukrytá na stránkách.</p>
@@ -385,7 +391,7 @@
           </div>
         </div>
         <p class="unveil-hint reveal">
-          <span class="unveil-hint--hover" data-i18n="leaflet.hint">Přejeďte po lístku myší a odhalte, co skrývá.</span>
+          <span class="unveil-hint--hover" data-i18n="leaflet.hint">Sledujte kouzelnou hůlku, která odhalí, to, co pouhé oko nevidí.</span>
           <span class="unveil-hint--wand" data-i18n="leaflet.hintWand">Sledujte kouzelnou hůlku — odhaluje, co lístek skrývá.</span>
         </p>
         <figure class="unveil framed reveal">
@@ -435,20 +441,19 @@
     <!-- ===== Magické zákusky ===== -->
     <section class="section section--cakes" id="zakusky">
       <div class="container">
-        <div class="split-intro">
-          <h2 class="title reveal">
+        <div class="duo duo--gallery">
+          <div class="duo__text">
+            <h2 class="title reveal">
             <em data-i18n="cakes.title1">Čaro-zákusky,</em><br>
             <span data-i18n="cakes.title2">které potěší nejen vaše oči…</span>
           </h2>
-          <div class="split-intro__text">
             <p class="lead reveal" data-i18n="cakes.p1">V&nbsp;Čarokavárně si zakládáme na pestrém výběru originálních a&nbsp;tematických dobrot, které vás okouzlí nejen svým vzhledem, ale i&nbsp;chutí.</p>
             <p class="lead reveal" data-i18n="cakes.p2">Naši nabídku pravidelně obměňujeme, takže při každé návštěvě můžete objevit a&nbsp;ochutnat něco nového.</p>
             <p class="lead reveal" data-i18n="cakes.p3">A&nbsp;v&nbsp;naší nabídce nechybí ani bezlepkové a&nbsp;bezlaktózové zákusky.&nbsp;🌿</p>
             <p class="lead reveal" data-i18n="cakes.p4">Zde je malá ukázka našich kouzelných dobrot.&nbsp;✨</p>
           </div>
-        </div>
 
-        <div class="carousel carousel--multi carousel--cakes reveal" role="region" aria-roledescription="carousel" aria-label="Ukázka kouzelných zákusků">
+        <div class="carousel carousel--burn reveal" role="region" aria-roledescription="carousel" aria-label="Ukázka kouzelných zákusků">
           <div class="carousel__track" tabindex="0">
             <figure class="carousel__slide framed"><video src="assets/video/vitrina-zakusky.mp4" data-poster="assets/video/vitrina-zakusky-poster.jpg" width="720" height="1280" muted loop playsinline preload="none" data-inview-play aria-label="Vitrína plná kouzelných zákusků — lektvary, kotlíky, dorty a dezerty v korbelících"></video></figure>
             <figure class="carousel__slide framed"><img src="assets/img/zakusky/01-svitky-pecet.jpg" alt="Zákusky ve tvaru svitků s červenou voskovou pečetí" loading="lazy"></figure>
@@ -457,19 +462,19 @@
             <figure class="carousel__slide framed"><img src="assets/img/zakusky/04-vitrina-plna.jpg" alt="Plná vitrína dortů a zákusků — dýně, lebky, čarodějnické klobouky" loading="lazy"></figure>
             <figure class="carousel__slide framed"><img src="assets/img/zakusky/05-podnos-kotlik.jpg" alt="Podnos zákusků kolem kouřícího kotlíku — myška, klobouk, lektvar, dýně a mandragora" loading="lazy"></figure>
             <figure class="carousel__slide framed"><img src="assets/img/zakusky/06-lektvary-dyne.jpg" alt="Růžové lahvičky lektvarů, čokoládové kotlíky a oranžové dýně" loading="lazy"></figure>
-            <figure class="carousel__slide framed"><img src="assets/img/zakusky/08-vitrina-zlatonky.jpg" alt="Vitrína s kotlíky, lektvary, klobouky a cupcaky se zlatými křídly" loading="lazy"></figure>
-            <figure class="carousel__slide framed"><img src="assets/img/zakusky/09-vitrina-lustr.jpg" alt="Vitrína plná dobrot pod lustrem s kostlivci" loading="lazy"></figure>
-            <figure class="carousel__slide framed"><img src="assets/img/zakusky/10-lebky-lektvary.jpg" alt="Zákusky ve tvaru lebek a růžové lahvičky s nápisem Lektvar" loading="lazy"></figure>
-            <figure class="carousel__slide framed"><img src="assets/img/zakusky/11-sovi-cupcakes.jpg" alt="Cupcaky zdobené bílými sovami na hromádce starých knih" loading="lazy"></figure>
-            <figure class="carousel__slide framed"><img src="assets/img/zakusky/12-kotliky-hadi-detail.jpg" alt="Detail čokoládových kotlíků a zelených hádků ve vitríně" loading="lazy"></figure>
-            <figure class="carousel__slide framed"><img src="assets/img/zakusky/13-lektvary-svitky.jpg" alt="Lahvičky lektvarů, ořechový cheesecake a svitky s pečetí" loading="lazy"></figure>
-            <figure class="carousel__slide framed"><img src="assets/img/zakusky/14-dopisy.jpg" alt="Čokoládové zákusky s dopisem zapečetěným voskem" loading="lazy"></figure>
-            <figure class="carousel__slide framed"><img src="assets/img/zakusky/15-dezerty-mlha.jpg" alt="Osm dezertů v mlze ze suchého ledu — srdce, lebka, iglú, jablko a další" loading="lazy"></figure>
-            <figure class="carousel__slide framed"><img src="assets/img/zakusky/16-podnos-elixir.jpg" alt="Podnos s elixírem života, svitkem, srdcem, lebkou a mechovým dortíkem" loading="lazy"></figure>
-            <figure class="carousel__slide framed"><img src="assets/img/zakusky/17-dyne.jpg" alt="Zákusek ve tvaru oranžové dýně" loading="lazy"></figure>
-            <figure class="carousel__slide framed"><img src="assets/img/zakusky/18-dyne-myska-oko.jpg" alt="Dýně, myška a pyramida s okem před malbou kouzelného lesa" loading="lazy"></figure>
-            <figure class="carousel__slide framed"><img src="assets/img/zakusky/19-podnos-pavouk.jpg" alt="Podnos s dýní, pařezem s pavoukem, lebkou a kostí mezi pavouky" loading="lazy"></figure>
-            <figure class="carousel__slide framed"><img src="assets/img/zakusky/20-mysky.jpg" alt="Šedé myšky z marcipánu na čokoládových dortících" loading="lazy"></figure>
+            <figure class="carousel__slide framed"><img src="assets/img/zakusky/07-vitrina-zlatonky.jpg" alt="Vitrína s kotlíky, lektvary, klobouky a cupcaky se zlatými křídly" loading="lazy"></figure>
+            <figure class="carousel__slide framed"><img src="assets/img/zakusky/08-vitrina-lustr.jpg" alt="Vitrína plná dobrot pod lustrem s kostlivci" loading="lazy"></figure>
+            <figure class="carousel__slide framed"><img src="assets/img/zakusky/09-lebky-lektvary.jpg" alt="Zákusky ve tvaru lebek a růžové lahvičky s nápisem Lektvar" loading="lazy"></figure>
+            <figure class="carousel__slide framed"><img src="assets/img/zakusky/10-sovi-cupcakes.jpg" alt="Cupcaky zdobené bílými sovami na hromádce starých knih" loading="lazy"></figure>
+            <figure class="carousel__slide framed"><img src="assets/img/zakusky/11-kotliky-hadi-detail.jpg" alt="Detail čokoládových kotlíků a zelených hádků ve vitríně" loading="lazy"></figure>
+            <figure class="carousel__slide framed"><img src="assets/img/zakusky/12-lektvary-svitky.jpg" alt="Lahvičky lektvarů, ořechový cheesecake a svitky s pečetí" loading="lazy"></figure>
+            <figure class="carousel__slide framed"><img src="assets/img/zakusky/13-dopisy.jpg" alt="Čokoládové zákusky s dopisem zapečetěným voskem" loading="lazy"></figure>
+            <figure class="carousel__slide framed"><img src="assets/img/zakusky/14-dezerty-mlha.jpg" alt="Osm dezertů v mlze ze suchého ledu — srdce, lebka, iglú, jablko a další" loading="lazy"></figure>
+            <figure class="carousel__slide framed"><img src="assets/img/zakusky/15-podnos-elixir.jpg" alt="Podnos s elixírem života, svitkem, srdcem, lebkou a mechovým dortíkem" loading="lazy"></figure>
+            <figure class="carousel__slide framed"><img src="assets/img/zakusky/16-dyne.jpg" alt="Zákusek ve tvaru oranžové dýně" loading="lazy"></figure>
+            <figure class="carousel__slide framed"><img src="assets/img/zakusky/17-dyne-myska-oko.jpg" alt="Dýně, myška a pyramida s okem před malbou kouzelného lesa" loading="lazy"></figure>
+            <figure class="carousel__slide framed"><img src="assets/img/zakusky/18-podnos-pavouk.jpg" alt="Podnos s dýní, pařezem s pavoukem, lebkou a kostí mezi pavouky" loading="lazy"></figure>
+            <figure class="carousel__slide framed"><img src="assets/img/zakusky/19-mysky.jpg" alt="Šedé myšky z marcipánu na čokoládových dortících" loading="lazy"></figure>
           </div>
           <div class="carousel__controls">
             <button class="carousel__btn" type="button" data-step="-1" aria-label="Předchozí fotka">
@@ -481,25 +486,25 @@
             </button>
           </div>
         </div>
+        </div>
       </div>
     </section>
 
     <!-- ===== Lektvary a elixíry ===== -->
     <section class="section section--potions" id="lektvary">
       <div class="container">
-        <div class="split-intro">
-          <h2 class="title reveal">
+        <div class="duo duo--gallery">
+          <div class="duo__text">
+            <h2 class="title reveal">
             <em data-i18n="potions.title1">Čarovné lektvary</em><br>
-            <span data-i18n="potions.title2">pro malé i&nbsp;velké čaroděje</span>
+            <span data-i18n="potions.title2">pro malé i&nbsp;velké čaroděje.</span>
           </h2>
-          <div class="split-intro__text">
             <p class="lead reveal" data-i18n="potions.p1">Naše lektvary servírujeme v&nbsp;originálních tematických skleničkách s&nbsp;kouřícím efektem. Každý lektvar má svou vlastní jedinečnou skleničku, která dotváří celý kouzelný zážitek.</p>
             <p class="lead reveal" data-i18n="potions.p2">V&nbsp;nabídce najdete alkoholické i&nbsp;nealkoholické lektvary, které vás očarují hned po prvním doušku.</p>
             <p class="lead reveal" data-i18n="potions.p3">Naši nabídku pravidelně obměňujeme, a&nbsp;proto se po novém roce můžete těšit na zajímavé novinky.</p>
           </div>
-        </div>
 
-        <div class="carousel carousel--multi reveal" role="region" aria-roledescription="carousel" aria-label="Lektvary a elixíry Čarokavárny">
+        <div class="carousel carousel--burn reveal" role="region" aria-roledescription="carousel" aria-label="Lektvary a elixíry Čarokavárny">
           <div class="carousel__track" tabindex="0">
             <figure class="carousel__slide framed"><img src="assets/img/lektvary/01-horka-cokolada-jiskry.jpg" alt="Horká čokoláda se šlehačkou a sušenkou, sypaná jiskřivou skořicí" loading="lazy"></figure>
             <figure class="carousel__slide framed"><img src="assets/img/lektvary/02-srdce-lektvar.jpg" alt="Rudý lektvar ve skleničce ve tvaru srdce na rozložené mapě" loading="lazy"></figure>
@@ -519,9 +524,10 @@
             </button>
           </div>
         </div>
+        </div>
 
         <!-- lemonades: a smaller sub-part of the potions section — text left, two photos right -->
-        <div class="duo duo--sub">
+        <div class="duo duo--sub duo--gallery duo--flip">
           <div class="duo__text">
             <h3 class="title title--sub reveal">
               <em data-i18n="lemonade.title1">A&nbsp;máme i&nbsp;limonády</em><br>
@@ -529,7 +535,7 @@
             </h3>
             <p class="lead reveal" data-i18n="lemonade.p1">Naše domácí limonády si vaříme sami z&nbsp;čerstvého ovoce.</p>
           </div>
-          <div class="carousel carousel--multi carousel--two reveal" role="region" aria-roledescription="carousel" aria-label="Domácí limonády">
+          <div class="carousel carousel--burn reveal" role="region" aria-roledescription="carousel" aria-label="Domácí limonády">
             <div class="carousel__track" tabindex="0">
               <figure class="carousel__slide framed"><img src="assets/img/lektvary/08-limonada-grep.jpg" alt="Grepová limonáda v kouřící baňce na drceném ledu s plátky grepu a mátou" loading="lazy"></figure>
               <figure class="carousel__slide framed"><img src="assets/img/lektvary/09-limonada-malina.jpg" alt="Malinová limonáda v kouřící baňce s malinami, citronem a mátou" loading="lazy"></figure>
@@ -551,13 +557,13 @@
     <!-- ===== K půjčení ===== -->
     <section class="section section--rental" id="pujceni">
       <div class="container">
-        <div class="duo">
+        <div class="duo duo--gallery">
           <div class="duo__text">
             <h2 class="title reveal"><em data-i18n="rental.title1">U&nbsp;nás</em> <span data-i18n="rental.title2">se nudit nebudete…</span></h2>
             <p class="lead reveal" data-i18n="rental.p1">Aby zážitek z&nbsp;Čarokavárny byl intenzivnější, můžete si půjčit naše kouzelnické pláště, klobouky, hůlky nebo tematické brýle.</p>
             <p class="lead reveal" data-i18n="rental.p2">A&nbsp;pokud máte chuť na trochu zábavy, můžete si zahrát deskové hry nebo si zablbnout v&nbsp;našich originálních maskách, které máme k&nbsp;zapůjčení v&nbsp;našem fotokoutku u&nbsp;nástupiště.</p>
           </div>
-          <div class="carousel carousel--multi carousel--two reveal" role="region" aria-roledescription="carousel" aria-label="K půjčení v Čarokavárně">
+          <div class="carousel carousel--burn reveal" role="region" aria-roledescription="carousel" aria-label="K půjčení v Čarokavárně">
             <div class="carousel__track" tabindex="0">
               <figure class="carousel__slide framed"><img src="assets/img/pujceni/01-masky.jpg" alt="Originální masky k zapůjčení — skřítek, drak a příšera s tesáky" loading="lazy"></figure>
               <figure class="carousel__slide framed"><img src="assets/img/pujceni/02-klobouk-hry.jpg" alt="Moudrý klobouk, deskové hry a svíčky pod sovou s dopisem" loading="lazy"></figure>
@@ -671,21 +677,20 @@
          "Zimní nabídka" chip in O nás (both are marked data-season="zima"). -->
     <section class="section section--winter" id="zimni-nabidka" data-season="zima">
       <div class="container">
-        <div class="split-intro">
-          <div>
+        <div class="duo duo--gallery">
+          <div class="duo__text">
+            <div>
             <p class="season-badge reveal"><span aria-hidden="true">❄</span> <span data-i18n="winter.badge">Sezónní nabídka · jen po omezenou dobu</span></p>
             <h2 class="title reveal">
               <em data-i18n="winter.title1">I&nbsp;zima má v&nbsp;Čarokavárně</em><br>
               <span data-i18n="winter.title2">své kouzlo!&nbsp;🧣</span>
             </h2>
           </div>
-          <div class="split-intro__text">
             <p class="lead reveal" data-i18n="winter.p1">Připravili jsme pro vás speciální nabídku zimních nápojů, které vás zahřejí, potěší a&nbsp;zpříjemní vám chladné dny.</p>
             <p class="lead reveal" data-i18n="winter.p2">Malou ochutnávku vám prozradíme na fotografiích, ale co všechno se v&nbsp;našich zimních specialitách ukrývá? To už musíte přijít objevit sami!</p>
           </div>
-        </div>
 
-        <div class="carousel carousel--multi carousel--three reveal" style="--ratio: 3 / 4" role="region" aria-roledescription="carousel" aria-label="Zimní nabídka nápojů">
+        <div class="carousel carousel--burn reveal" role="region" aria-roledescription="carousel" aria-label="Zimní nabídka nápojů">
           <div class="carousel__track" tabindex="0">
             <figure class="carousel__slide framed"><img src="assets/img/zima/01-hrnek-hribek-veverka.jpg" alt="Zimní nápoj ve žlutém hrnku ve tvaru hříbku s veverkou a skořicí, kolem podzimní listí" loading="lazy"></figure>
             <figure class="carousel__slide framed"><img src="assets/img/zima/02-hrnek-medved.jpg" alt="Hrnek lední medvěd s šálou, plný šlehačky a marshmallow, ve sněhu a ledu" loading="lazy"></figure>
@@ -700,6 +705,7 @@
               <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="M3 8h11M9 3l5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.2"/></svg>
             </button>
           </div>
+        </div>
         </div>
       </div>
     </section>
@@ -799,13 +805,20 @@
                 <span class="logo logo--sm logo--glow"><img src="assets/img/logo.png" alt=""></span>
                 <h3>Brno</h3>
               </div>
-              <p class="branch__area" data-i18n="branches.brnoArea">Centrum Brna</p>
+              <p class="branch__area" data-i18n="branches.brnoArea">Centrum Brna – v&nbsp;přízemí pasáže&nbsp;EPNE</p>
+              <p class="branch__email"><a href="mailto:carokavarna@gmail.com">carokavarna@gmail.com</a></p>
               <div class="divider" aria-hidden="true"><span>✦</span></div>
               <dl class="hours">
                 <dt data-i18n="days.tueSun">Út – Ne</dt><dd>9:45 – 20:00</dd>
                 <dt data-i18n="days.mon">Pondělí</dt><dd data-i18n="days.closed">Zavřeno</dd>
               </dl>
               <a class="link-arrow" href="https://www.google.com/maps/search/?api=1&query=%C4%8Carokav%C3%A1rna%20Brno" target="_blank" rel="noopener" data-i18n="branches.map">Zobrazit na mapě →</a>
+              <dl class="branch__legal">
+                <dt data-i18n="legal.operator">Provozovatel</dt>
+                <dd>Magic Coffee s.r.o.<br>Josefská 697/7, Brno-střed 602&nbsp;00</dd>
+                <dd><span data-i18n="legal.ico">IČO</span>: 21218919</dd>
+                <dd data-i18n="legal.register">Spisová značka C&nbsp;137923 vedená u&nbsp;Krajského soudu v&nbsp;Brně</dd>
+              </dl>
             </div>
           </article>
         </div>
@@ -856,8 +869,7 @@
           </svg>
         </div>
         <div class="res-buttons reveal">
-          <!-- TODO: doplnit odkazy na rezervační systém CRM Cloud Cash -->
-          <a class="btn btn--fill" href="#" data-i18n="res.book">Rezervovat stůl</a>
+          <a class="btn btn--fill" href="https://crm.cloudcash.cz/brno/magic-coffee-s-r-o/carokavarna/reservation" target="_blank" rel="noopener" data-i18n="res.book">Rezervovat stůl</a>
         </div>
         <p class="res-note reveal" data-i18n="res.note">Rezervace jsou spravovány přes CRM Cloud Cash</p>
       </div>
@@ -876,7 +888,7 @@
             <div class="ig__grid reveal reveal--stagger">
               <a href="https://www.instagram.com/carokavarna_brno/" target="_blank" rel="noopener"><img src="assets/img/instagram/01-carodej.jpg" alt="Socha čaroděje s holí a knihou za sklem výlohy" loading="lazy"></a>
               <a href="https://www.instagram.com/carokavarna_brno/" target="_blank" rel="noopener"><img src="assets/img/instagram/02-zakusky-kotlik.jpg" alt="Kouzelné zákusky kolem kouřícího kotlíku" loading="lazy"></a>
-              <a href="https://www.instagram.com/reel/DcNsHUEsjIE/" target="_blank" rel="noopener"><img src="assets/img/instagram/03-reel-cukrovy-mrak.jpg" alt="Cukrový mrak nad šálkem kávy — video na Instagramu" loading="lazy"></a>
+              <a href="https://www.instagram.com/carokavarna_brno/" target="_blank" rel="noopener"><img src="assets/img/instagram/03-reel-cukrovy-mrak.jpg" alt="Cukrový mrak nad šálkem kávy" loading="lazy"></a>
               <a href="https://www.instagram.com/carokavarna_brno/" target="_blank" rel="noopener"><img src="assets/img/instagram/04-chlapec-vlkodlak.jpg" alt="Malý čaroděj v plášti míří hůlkou na vlkodlaka" loading="lazy"></a>
               <a href="https://www.instagram.com/carokavarna_brno/" target="_blank" rel="noopener"><img src="assets/img/instagram/05-drak-mraky.jpg" alt="Rudý drak vylézající z modře nasvícených oblaků" loading="lazy"></a>
               <a href="https://www.instagram.com/carokavarna_brno/" target="_blank" rel="noopener"><img src="assets/img/instagram/06-kouzelne-menu.jpg" alt="Čarohůlka odhaluje skryté menu" loading="lazy"></a>
@@ -908,6 +920,6 @@
     <p class="footer__copy">© <span data-year>2026</span> Čarokavárna · <span data-i18n="footer.made">Vytvořeno s kouzlem</span> · Brno</p>
   </footer>
 
-  <script src="js/main.js?v=20261105"></script>
+  <script src="js/main.js?v=20261105f"></script>
 </body>
 </html>

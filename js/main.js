@@ -13,17 +13,17 @@
   const EN = {
     "nav.about": "About", "nav.branches": "Contact", "nav.reservation": "Booking",
     "nav.decor": "Decorations", "nav.leaflet": "Magic menu", "nav.unique": "What makes us different", "nav.faq": "FAQ",
-    "hero.line1": "Čarokavárna –", "hero.line2": "a place where magic comes alive and dreams come true.", "hero.tag": "Magical café", "hero.cta": "Enter the world of magic",
+    "hero.line1": "Čarokavárna –", "hero.line2": "a place where magic comes alive and dreams come true.", "hero.tag": "Brno, a magical place", "hero.cta": "Enter the world of magic",
     "about.title1": "We're not just a café.",
     "about.title": "We're a small escape<br>from the hectic world.",
     "about.p1": "A place that awakens the child in each of us. Come take a break from the everyday rush and step into a world of spells and magic.",
     "about.p2": "Here you can leave your worries at the door and rediscover the honest joy and imagination of childhood.",
     "about.p3": "At Čarokavárna we believe you're never too old for magic. So we created a place where, at least for a moment, you can return to your childhood, let our enchanting atmosphere carry you away and enjoy moments you'll remember with a smile.",
     "chip.interior": "Interior", "chip.decor": "Decorations",
-    "decor.title1": "Unique decorations", "decor.title2": "you won't see anywhere else",
+    "decor.title1": "Unique decorations", "decor.title2": "you won't find anywhere else.",
     "decor.p1": "At Čarokavárna we take pride in originality and uniqueness. Our decorations aren't just ordinary interior accessories. They are one-of-a-kind pieces made to order, with attention to every detail. Many of them are even life-sized, so you can enjoy the magical world quite literally within arm's reach.",
     "decor.p2": "We keep improving Čarokavárna and taking it further. Since it opened, the interior has gone through a big transformation and has gradually filled up with all kinds of decorations, each with its own soul and story.",
-    "leaflet.title1": "A wizard's menu", "leaflet.title2": "you conjure up yourself",
+    "leaflet.title1": "A wizard's menu", "leaflet.title2": "you conjure up yourself.",
     "leaflet.p1": "Here at Čarokavárna we can turn even ordinary things into something extraordinary.",
     "leaflet.p2": "That's why you won't get just any old menu. Ours is magical, and it carefully guards its contents from the eyes of all muggles.",
     "leaflet.p3": "A true wizard has to conjure up their own menu! Just take our special magic wand in your hand and reveal the secrets hidden on its pages.",
@@ -73,7 +73,7 @@
     "rental.title1": "You won't", "rental.title2": "get bored here…",
     "rental.p1": "To make your Čarokavárna experience even more intense, you can borrow our wizard cloaks, hats, wands or themed glasses.",
     "rental.p2": "And if you're up for a bit of fun, you can play board games or fool around in our original masks, which you can borrow in our photo corner by the platform.",
-    "potions.title1": "Enchanting potions", "potions.title2": "for young and grown-up wizards",
+    "potions.title1": "Enchanting potions", "potions.title2": "for young and grown-up wizards.",
     "potions.p1": "We serve our potions in original themed glasses with a smoking effect. Every potion has its own unique glass that completes the whole magical experience.",
     "potions.p2": "You'll find both alcoholic and non-alcoholic potions that will enchant you from the very first sip.",
     "lemonade.title1": "And we have lemonades", "lemonade.title2": "from the magic forest, too.",
@@ -84,16 +84,18 @@
     "cakes.p2": "We change our selection regularly, so every visit you can discover and taste something new.",
     "cakes.p3": "And our selection also includes gluten-free and lactose-free desserts. 🌿",
     "cakes.p4": "Here is a small sample of our magical treats. ✨",
-    "leaflet.hint": "Move your mouse over the menu to reveal what it hides.",
+    "leaflet.hint": "Follow the magic wand, which reveals what the naked eye cannot see.",
     "leaflet.hintWand": "Follow the magic wand — it reveals what the menu hides.",
     "branches.title": "Where to find us",
-    "branches.brnoArea": "Brno city centre", "branches.map": "Show on map →",
+    "branches.brnoArea": "Brno city centre – ground floor of the EPNE arcade", "branches.map": "Show on map →",
     "days.tueSun": "Tue – Sun", "days.mon": "Monday", "days.closed": "Closed",
     "res.title": "Booking",
     "res.text": "Book your table easily through our CRM Cloud Cash reservation system. A few clicks and the spot is yours.",
     "res.book": "Book a table", "res.note": "Bookings are managed via CRM Cloud Cash",
     "ig.follow": "Follow us on Instagram →",
     "footer.made": "Made with magic",
+    "stamp.l1": "Only", "stamp.l2": "here",
+    "legal.operator": "Operator", "legal.ico": "Company ID", "legal.register": "Registered under file no. C 137923 at the Regional Court in Brno",
   };
 
   /* ---------------------------------------------------------
@@ -215,6 +217,9 @@
     if (!item.querySelector("img")) return;   // photo placeholders have nothing to enlarge
     item.tabIndex = 0;
     const open = () => {
+      // in burning carousels a tap burns to the next photo instead — unless all photos already fit
+      const burning = item.closest(".carousel--burn");
+      if (burning && !burning.classList.contains("is-static")) return;
       const img = item.querySelector("img");
       lbImg.src = img.src;
       lbImg.alt = img.alt;
@@ -228,6 +233,108 @@
      Photo carousels (interior in O nás, Dekorace) — native scroll-snap does the swiping;
      this keeps the counter and arrow buttons in sync with it
      --------------------------------------------------------- */
+  /* ---------------------------------------------------------
+     Burn transition (carousel--burn): the old photo burns away from the bottom up —
+     a ragged noise edge with a glowing ember band and a charred fringe — revealing the
+     new slide underneath. A canvas laid over the new slide draws the old picture,
+     masked per frame by a low-res mask (cheap) scaled up smoothly.
+     --------------------------------------------------------- */
+  function makeNoise(w, h, seed) {
+    // value-noise fbm in 0..1
+    let s = seed;
+    const rnd = () => ((s = (s * 16807) % 2147483647) / 2147483647);
+    const out = new Float32Array(w * h);
+    let amp = 1, total = 0;
+    for (let oct = 0, cell = 24; oct < 4; oct++, cell /= 2, amp /= 2) {
+      const gw = Math.ceil(w / cell) + 2, gh = Math.ceil(h / cell) + 2;
+      const g = Float32Array.from({ length: gw * gh }, rnd);
+      for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+        const fx = x / cell, fy = y / cell, ix = fx | 0, iy = fy | 0;
+        const tx = fx - ix, ty = fy - iy, sx = tx * tx * (3 - 2 * tx), sy = ty * ty * (3 - 2 * ty);
+        const a = g[iy * gw + ix], b = g[iy * gw + ix + 1], c = g[(iy + 1) * gw + ix], d = g[(iy + 1) * gw + ix + 1];
+        out[y * w + x] += amp * (a + (b - a) * sx + (c - a) * sy + (a - b - c + d) * sx * sy);
+      }
+      total += amp;
+    }
+    for (let i = 0; i < out.length; i++) out[i] /= total;
+    return out;
+  }
+
+  // draws el (img or video) into ctx like object-fit: cover with its object-position
+  function drawCover(ctx, el, w, h) {
+    const nw = el.naturalWidth || el.videoWidth, nh = el.naturalHeight || el.videoHeight;
+    if (!nw || !nh) return false;
+    const scale = Math.max(w / nw, h / nh), sw = w / scale, sh = h / scale;
+    const [px, py] = getComputedStyle(el).objectPosition.split(" ").map(v => parseFloat(v) / 100);
+    ctx.drawImage(el, (nw - sw) * (isNaN(px) ? .5 : px), (nh - sh) * (isNaN(py) ? .5 : py), sw, sh, 0, 0, w, h);
+    return true;
+  }
+
+  // origin: optional {cx, cy, far} in viewport px — the fire spreads outward from the tap point; far is
+  // the distance to the farthest corner of the visible row, so with several photos in view the fire
+  // reaches the tapped photo first and its neighbours later. Without it the photo burns bottom-up (arrows).
+  function burnTransition(fromSlide, toSlide, origin) {
+    const media = fromSlide.querySelector("img, video");
+    const w = toSlide.clientWidth, h = toSlide.clientHeight;
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const old = document.createElement("canvas");
+    old.width = w * dpr; old.height = h * dpr;
+    try { if (!media || !drawCover(old.getContext("2d"), media, old.width, old.height)) return false; }
+    catch (e) { return false; }
+
+    const canvas = document.createElement("canvas");
+    canvas.className = "burn-canvas";
+    canvas.width = old.width; canvas.height = old.height;
+    const ctx = canvas.getContext("2d");
+    const lw = Math.ceil(w / 3), lh = Math.ceil(h / 3);          // low-res mask / fx layers
+    const low = document.createElement("canvas");
+    low.width = lw; low.height = lh;
+    const lctx = low.getContext("2d");
+    const img = lctx.createImageData(lw, lh), px = img.data;
+    const noise = makeNoise(lw, lh, 7 + (Math.random() * 1e6 | 0));
+    const flick = makeNoise(lw, lh, 99);
+    const field = new Float32Array(lw * lh);
+    // field = when each spot catches fire (0 first … 1 last), roughened by noise for a ragged edge
+    if (origin) {
+      const r = toSlide.getBoundingClientRect();
+      const ox = (origin.cx - r.left) / 3, oy = (origin.cy - r.top) / 3, far = origin.far / 3;
+      for (let y = 0, i = 0; y < lh; y++) for (let x = 0; x < lw; x++, i++) field[i] = .78 * Math.min(1, Math.hypot(x - ox, y - oy) / far) + .22 * noise[i];
+    } else {
+      for (let y = 0, i = 0; y < lh; y++) for (let x = 0; x < lw; x++, i++) field[i] = .8 * (1 - y / lh) + .2 * noise[i];
+    }
+    toSlide.appendChild(canvas);
+
+    const DUR = 1050, start = performance.now();
+    const layer = (fn, op) => {             // fill the low-res layer and composite it, scaled up, onto the canvas
+      for (let i = 0, j = 0; i < field.length; i++, j += 4) fn(i, j);
+      lctx.putImageData(img, 0, 0);
+      ctx.globalCompositeOperation = op;
+      ctx.drawImage(low, 0, 0, canvas.width, canvas.height);
+    };
+    const frame = now => {
+      const t = Math.min(1, (now - start) / DUR);
+      const p = -.08 + 1.2 * (t < .5 ? 2 * t * t : 1 - (-2 * t + 2) ** 2 / 2);   // ease in-out
+      const shift = (now / 40 | 0) * 7;
+      ctx.globalCompositeOperation = "source-over";
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(old, 0, 0);
+      // 1) mask: keep the old photo where it hasn't burned yet (soft ragged edge)
+      layer((i, j) => { const a = Math.max(0, Math.min(1, (field[i] - p) / .025)); px[j] = px[j + 1] = px[j + 2] = 0; px[j + 3] = a * 255; }, "destination-in");
+      // 2) char: the old photo darkens just above the edge
+      layer((i, j) => { const d = field[i] - p; const a = d > 0 && d < .11 ? (1 - d / .11) * .85 : 0; px[j] = 22; px[j + 1] = 10; px[j + 2] = 3; px[j + 3] = a * 255; }, "source-atop");
+      // 3) embers: a flickering glowing band on the edge, spilling a little onto the new photo
+      layer((i, j) => {
+        const d = field[i] - p, k = Math.max(0, 1 - Math.abs(d - .005) / .04);
+        const f = .65 + .35 * flick[(i + shift) % flick.length], hot = k > .55;
+        px[j] = 255; px[j + 1] = hot ? 205 : 110 + 60 * k; px[j + 2] = hot ? 120 : 25; px[j + 3] = Math.min(255, k ** 1.4 * f * 290);
+      }, "source-over");
+      if (t < 1) requestAnimationFrame(frame);
+      else canvas.remove();
+    };
+    requestAnimationFrame(frame);
+    return true;
+  }
+
   document.querySelectorAll(".carousel").forEach(carousel => {
     const track = carousel.querySelector(".carousel__track");
     const slides = [...track.children];
@@ -255,14 +362,73 @@
       clearTimeout(settle); settle = setTimeout(() => { pending = null; }, 160);
     }, { passive: true });
     window.addEventListener("resize", sync);
+    const burns = carousel.classList.contains("carousel--burn");
+    // the furthest the row can actually go (with several photos in view it stops before the last one)
+    const lastIndex = () => Math.min(slides.length - 1, Math.round((track.scrollWidth - track.clientWidth) / step()));
+    function goTo(target, origin) {
+      const from = pending ?? current();
+      target = Math.max(0, Math.min(lastIndex(), target));
+      const left = slides[target].offsetLeft - slides[0].offsetLeft;
+      // carousel--burn: jump to the new position, then over every photo now in view burn away the
+      // photo that stood in that spot before (falls back to sliding if nothing could be drawn)
+      if (burns && !reduceMotion && pending === null && target !== from) {
+        const tr = track.getBoundingClientRect();
+        const before = slides.map(s => ({ s, left: s.getBoundingClientRect().left }))
+          .filter(o => o.left < tr.right - 1 && o.left + o.s.offsetWidth > tr.left + 1);
+        track.scrollTo({ left, behavior: "instant" });
+        let started = 0;
+        before.forEach(o => {
+          const to = slides.find(n => Math.abs(n.getBoundingClientRect().left - o.left) < 3);
+          if (to && to !== o.s && burnTransition(o.s, to, origin)) started++;
+        });
+        if (started) return;
+      }
+      pending = target;
+      track.scrollTo({ left, behavior: reduceMotion ? "auto" : "smooth" });
+    }
     carousel.querySelectorAll(".carousel__btn").forEach(btn =>
-      btn.addEventListener("click", () => {
-        const from = pending ?? current();
-        // the furthest the row can actually go (with several photos in view it stops before the last one)
-        const last = Math.min(slides.length - 1, Math.round((track.scrollWidth - track.clientWidth) / step()));
-        pending = Math.max(0, Math.min(last, from + Number(btn.dataset.step)));
-        track.scrollTo({ left: slides[pending].offsetLeft - slides[0].offsetLeft, behavior: reduceMotion ? "auto" : "smooth" });
-      }));
+      btn.addEventListener("click", () => goTo((pending ?? current()) + Number(btn.dataset.step))));
+
+    // carousel--burn: a tap sets the photos on fire from the touched spot and moves on by one
+    // (after the end it starts over); a swipe doesn't fire a click, so swiping still slides.
+    // When every photo already fits (is-static) there is nowhere to go — the tap opens the photo instead.
+    const multi = carousel.classList.contains("carousel--multi");
+    if (burns) track.addEventListener("click", e => {
+      const slide = e.target.closest(".carousel__slide");
+      if (!slide || carousel.classList.contains("is-static") || track.querySelector(".burn-canvas")) return;
+      const i = slides.indexOf(slide), cur = current();
+      if (!multi && i !== cur) { goTo(i); return; }   // single photo: tapped the one peeking in at the side → go to it
+      const tr = track.getBoundingClientRect(), cx = e.clientX, cy = e.clientY;
+      const far = Math.max(...[[tr.left, tr.top], [tr.right, tr.top], [tr.left, tr.bottom], [tr.right, tr.bottom]].map(([x, y]) => Math.hypot(x - cx, y - cy)));
+      goTo(cur >= lastIndex() ? 0 : cur + 1, { cx, cy, far });
+    });
+
+    // carousel--burn autoplay: while at least half of it is on screen, it burns on to the next photo
+    // every ~7 s (twice as long when a video is showing). Any interaction — arrow, tap, swipe, keys —
+    // restarts the countdown; a mouse resting over it pauses it. Off with reduced motion.
+    if (burns && !reduceMotion) {
+      const AUTO = 7000;
+      let timer = 0, inView = false, hovering = false;
+      const schedule = () => {
+        clearTimeout(timer);
+        if (!inView || hovering || document.hidden) return;
+        const hasVideo = slides[current()] && slides[current()].querySelector("video");
+        timer = setTimeout(tick, AUTO * (hasVideo ? 2 : 1) + Math.random() * 1200);   // jitter: carousels in view don't fire together
+      };
+      const tick = () => {
+        if (!carousel.classList.contains("is-static") && !track.querySelector(".burn-canvas")) {
+          const cur = current();
+          goTo(cur >= lastIndex() ? 0 : cur + 1);
+        }
+        schedule();
+      };
+      new IntersectionObserver(([entry]) => { inView = entry.isIntersecting; schedule(); }, { threshold: .5 }).observe(track);
+      document.addEventListener("visibilitychange", schedule);
+      ["pointerdown", "keydown", "wheel", "touchstart"].forEach(type => carousel.addEventListener(type, schedule, { passive: true }));
+      track.addEventListener("scroll", () => { if (!track.querySelector(".burn-canvas")) schedule(); }, { passive: true });   // manual swipes
+      carousel.addEventListener("pointerenter", e => { if (e.pointerType === "mouse") { hovering = true; schedule(); } });
+      carousel.addEventListener("pointerleave", e => { if (e.pointerType === "mouse") { hovering = false; schedule(); } });
+    }
     sync();
   });
 

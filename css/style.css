@@ -75,10 +75,11 @@ figure { margin: 0; }
 .center .title { transform-origin: center; }
 .title.is-enchanted { animation: enchant 1.4s var(--ease); }
 .hero__title.is-enchanted { animation: shimmer 9s linear infinite, enchant 1.4s var(--ease); }
+/* text-shadow gives the same glow as stacked drop-shadow filters at a fraction of the cost */
 @keyframes enchant {
-  0%   { filter: drop-shadow(0 0 0 rgb(241 242 233 / 0)); transform: none; }
-  25%  { filter: drop-shadow(0 0 12px rgb(241 242 233 / .75)) drop-shadow(0 0 30px rgb(224 224 209 / .35)); transform: scale(1.03); }
-  100% { filter: drop-shadow(0 0 0 rgb(241 242 233 / 0)); transform: none; }
+  0%   { text-shadow: 0 0 0 rgb(241 242 233 / 0), 0 0 0 rgb(224 224 209 / 0); transform: none; }
+  25%  { text-shadow: 0 0 12px rgb(241 242 233 / .75), 0 0 30px rgb(224 224 209 / .35); transform: scale(1.03); }
+  100% { text-shadow: 0 0 0 rgb(241 242 233 / 0), 0 0 0 rgb(224 224 209 / 0); transform: none; }
 }
 
 .lead {
@@ -156,6 +157,8 @@ figure { margin: 0; }
   opacity: 0;
   transition: opacity .4s;
 }
+/* (on touch screens :hover stays on after a tap; the looping aura/orbit then pause as soon as
+   the button leaves the screen — see .is-offscreen) */
 .btn:hover, .btn:focus-visible {
   color: var(--c-ink);
   transition: color .35s var(--ease) .5s, box-shadow .45s var(--ease);
@@ -270,17 +273,23 @@ figure { margin: 0; }
     linear-gradient(180deg, var(--c-forest) 0%, var(--c-deep) 100%);
 }
 
+/* Soft glows: a radial gradient that fades out like a heavily blurred disc. (A real filter: blur(70px)
+   on a moving element is recomputed every frame — on phones that alone made the hero stutter.)
+   The padding grows the box by roughly the old blur radius; the negative margin keeps it in place. */
 .hero__glow {
   position: absolute;
+  box-sizing: content-box;
+  padding: 110px;
+  margin: -110px;
   border-radius: 50%;
-  filter: blur(70px);
+  background: radial-gradient(closest-side, var(--glow) 18%, color-mix(in srgb, var(--glow) 55%, transparent) 50%, color-mix(in srgb, var(--glow) 15%, transparent) 78%, transparent);
   opacity: .55;
   animation: drift 22s ease-in-out infinite alternate;
   pointer-events: none;
 }
-.hero__glow--1 { width: 34vw; height: 34vw; left: -8vw; top: -6vw; background: color-mix(in srgb, var(--c-forest) 60%, var(--c-sage)); }
-.hero__glow--2 { width: 28vw; height: 28vw; left: 4vw; bottom: -10vw; background: color-mix(in srgb, var(--c-forest) 70%, var(--c-sage)); animation-duration: 28s; }
-.hero__glow--3 { width: 30vw; height: 30vw; right: -10vw; bottom: -4vw; background: color-mix(in srgb, var(--c-forest) 55%, var(--c-sage)); animation-duration: 25s; animation-delay: -8s; }
+.hero__glow--1 { width: 34vw; height: 34vw; left: -8vw; top: -6vw; --glow: color-mix(in srgb, var(--c-forest) 60%, var(--c-sage)); }
+.hero__glow--2 { width: 28vw; height: 28vw; left: 4vw; bottom: -10vw; --glow: color-mix(in srgb, var(--c-forest) 70%, var(--c-sage)); animation-duration: 28s; }
+.hero__glow--3 { width: 30vw; height: 30vw; right: -10vw; bottom: -4vw; --glow: color-mix(in srgb, var(--c-forest) 55%, var(--c-sage)); animation-duration: 25s; animation-delay: -8s; }
 
 @keyframes drift {
   0%   { transform: translate(0, 0) scale(1); }
@@ -335,7 +344,9 @@ figure { margin: 0; }
   pointer-events: none;
   transition: opacity 1.6s var(--ease) .3s, transform 1.8s var(--ease) .3s;
 }
-.hero__circle g { transform-box: view-box; transform-origin: center; }
+/* each ring layer is its own <svg>, so the browser rotates it on the GPU instead of
+   repainting the whole circle every frame (rotating <g>s inside one SVG can't be composited) */
+.hero__circle svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
 .mc-line, .mc-ticks, .mc-arc, .mc-dots { fill: none; stroke: var(--c-mist); }
 .mc-line  { stroke-width: 1;   opacity: .2; }
 .mc-ticks { stroke-width: 7;   opacity: .22; stroke-dasharray: 1 23.35; }                    /* 48 ticks  */
@@ -371,7 +382,8 @@ figure { margin: 0; }
     radial-gradient(ellipse 22% 40% at 86% 84%, rgb(224 224 209 / .055), transparent 70%);
   background-size: 50% 100%;
   background-repeat: repeat-x;
-  filter: blur(18px);
+  /* no blur filter: the gradients already fade softly, and a blur over this 200%-wide moving strip
+     was recomputed every frame */
   will-change: transform;
   animation: fog-drift 70s linear infinite;
 }
@@ -430,7 +442,14 @@ figure { margin: 0; }
 .is-loading .hero__sub, .is-loading .hero__cta { transform: translateY(16px); }
 .hero__title { transition-delay: .35s; }
 .hero__sub { transition-delay: .55s; }
-.hero__cta { transition-delay: .7s; }
+/* the CTA keeps its button colour/glow transitions next to the intro fade (the intro list above would
+   otherwise replace them, so the colour snapped back instantly when the pointer left) */
+.hero__cta {
+  transition: opacity 1s var(--ease) .7s, transform 1.2s var(--ease) .7s,
+              color .45s var(--ease), box-shadow .45s var(--ease);
+}
+/* still invisible during the intro: no hover effect or sparks from an unseen button */
+.is-loading .hero__cta { pointer-events: none; }
 .hero__scroll { transition-delay: .9s; }
 
 /* ---------- Sections ---------- */
@@ -473,16 +492,20 @@ figure { margin: 0; }
 /* Clouds: content rises out of a mist bank that parts and dissolves (layers added by JS).
    Four layers: left + right banks part sideways, a dense middle bank sinks, high wisps drift up. */
 .section { overflow-x: clip; }   /* drifting clouds must not cause sideways scroll */
+/* Performance: the bank is at most ~one screen tall (only the top of a section is in view when it
+   rises — before, each of the 6 layers spanned the whole, often several-screens-tall section), and the
+   puffs are soft radial gradients without a blur filter (a blurred, moving, section-sized layer is
+   very expensive, especially at a phone's 3× pixel density). */
 .clouds {
   position: absolute;
-  left: -10%; right: -10%; top: 0; bottom: 0;
+  left: -10%; right: -10%; top: 0;
+  height: min(100%, 110vh);
   z-index: 3;
   pointer-events: none;
 }
 .cloud {
   position: absolute;
   inset: 0;
-  filter: blur(28px);
   transition: transform 3.8s var(--ease), opacity 3.2s var(--ease), visibility 0s 4.5s;
 }
 .cloud--l {
@@ -512,7 +535,6 @@ figure { margin: 0; }
     radial-gradient(ellipse 14% 16% at 44% 46%, rgb(224 224 209 / .16), transparent 70%);
 }
 .cloud--high {
-  filter: blur(16px);
   transition: transform 3s var(--ease), opacity 2.4s var(--ease), visibility 0s 3.5s;
   background:
     radial-gradient(ellipse 24% 6% at 22% 22%, rgb(224 224 209 / .13), transparent 70%),
@@ -530,7 +552,6 @@ figure { margin: 0; }
     radial-gradient(ellipse 24% 18% at 68% 88%,  rgb(224 224 209 / .22), transparent 70%);
 }
 .cloud--mid {                   /* scattered puffs through the middle and top */
-  filter: blur(22px);
   background:
     radial-gradient(ellipse 12% 12% at 20% 30%, rgb(224 224 209 / .15), transparent 70%),
     radial-gradient(ellipse 10% 10% at 58% 22%, rgb(224 224 209 / .13), transparent 70%),
@@ -1490,6 +1511,11 @@ a.feature:hover, a.feature:focus-visible {
   .branch__body { padding: 28px 22px 32px; }
   .res-buttons .btn { width: 100%; }
 }
+
+/* Looping decorations that have scrolled out of view stop (class set by JS), so they don't keep
+   the GPU busy while nobody can see them */
+.is-offscreen, .is-offscreen *, .is-offscreen::before, .is-offscreen::after,
+.is-offscreen *::before, .is-offscreen *::after { animation-play-state: paused !important; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition-duration: .01ms !important; }

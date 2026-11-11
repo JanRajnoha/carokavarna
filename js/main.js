@@ -138,7 +138,10 @@
   const burger = document.querySelector(".nav__burger");
   const navLinks = [...document.querySelectorAll(".nav__links a")];
 
+  // once per frame at most: scroll events can fire many times per frame, and reading scrollHeight forces layout
+  let scrollQueued = false;
   function onScroll() {
+    scrollQueued = false;
     const y = window.scrollY;
     const max = document.documentElement.scrollHeight - window.innerHeight;
     nav.classList.toggle("is-scrolled", y > 40);
@@ -146,7 +149,9 @@
     // back in the hero → no section is "current"
     if (y < window.innerHeight * 0.5) navLinks.forEach(a => a.classList.remove("is-active"));
   }
-  window.addEventListener("scroll", onScroll, { passive: true });
+  window.addEventListener("scroll", () => {
+    if (!scrollQueued) { scrollQueued = true; requestAnimationFrame(onScroll); }
+  }, { passive: true });
   onScroll();
 
   const sectionObserver = new IntersectionObserver(entries => {
@@ -260,6 +265,14 @@
     return out;
   }
 
+  // the ember flicker pattern never changes for a given size, so it is computed once
+  const flickCache = new Map();
+  function flickNoise(w, h) {
+    const key = `${w}x${h}`;
+    if (!flickCache.has(key)) flickCache.set(key, makeNoise(w, h, 99));
+    return flickCache.get(key);
+  }
+
   // draws el (img or video) into ctx like object-fit: cover with its object-position
   function drawCover(ctx, el, w, h) {
     const nw = el.naturalWidth || el.videoWidth, nh = el.naturalHeight || el.videoHeight;
@@ -292,7 +305,7 @@
     const lctx = low.getContext("2d");
     const img = lctx.createImageData(lw, lh), px = img.data;
     const noise = makeNoise(lw, lh, 7 + (Math.random() * 1e6 | 0));
-    const flick = makeNoise(lw, lh, 99);
+    const flick = flickNoise(lw, lh);
     const field = new Float32Array(lw * lh);
     // field = when each spot catches fire (0 first … 1 last), roughened by noise for a ragged edge
     if (origin) {
@@ -467,6 +480,9 @@
     let w, h, dpr, motes = [], running = true;
 
     const resize = () => {
+      // iOS fires resize while scrolling (the address bar shows / hides); the hero's size doesn't
+      // change then, so don't reallocate the canvas and respawn every mote
+      if (dust.clientWidth === w && dust.clientHeight === h) return;
       dpr = Math.min(window.devicePixelRatio || 1, 2);
       w = dust.clientWidth; h = dust.clientHeight;
       dust.width = w * dpr; dust.height = h * dpr;
@@ -514,11 +530,32 @@
      --------------------------------------------------------- */
   const sc = document.querySelector(".sparkle-canvas");
   const sctx = sc.getContext("2d");
-  let sparks = [], sparkLoop = false, sdpr = 1;
+  let sparks = [], sparkLoop = false, sdpr = 1, scW = 0, scH = 0;
+  // safety cap so frantic tapping can't pile up thousands of sparks (normal use stays far below it)
+  const MAX_SPARKS = 400;
+  // The glow around each spark is a pre-drawn soft sprite. (Canvas shadowBlur looks the same but is
+  // computed per spark per frame — it was the main cost of every tap / title / logo effect on phones.)
+  const glowSprite = document.createElement("canvas");
+  glowSprite.width = glowSprite.height = 64;
+  {
+    const g = glowSprite.getContext("2d"), grd = g.createRadialGradient(32, 32, 0, 32, 32, 32);
+    grd.addColorStop(0, "rgba(241, 242, 233, .85)");
+    grd.addColorStop(.3, "rgba(241, 242, 233, .4)");
+    grd.addColorStop(.6, "rgba(241, 242, 233, .1)");
+    grd.addColorStop(1, "rgba(241, 242, 233, 0)");
+    g.fillStyle = grd; g.fillRect(0, 0, 64, 64);
+  }
 
   const sizeSparkCanvas = () => {
+    // iOS fires resize while scrolling as the address bar shows / hides — only the height changes then.
+    // Keep the tallest size seen instead of reallocating the canvas on every scroll.
+    const widthChanged = innerWidth !== scW;
+    if (!widthChanged && innerHeight <= scH) return;
+    scH = widthChanged ? innerHeight : Math.max(scH, innerHeight);
+    scW = innerWidth;
     sdpr = Math.min(window.devicePixelRatio || 1, 2);
-    sc.width = innerWidth * sdpr; sc.height = innerHeight * sdpr;
+    sc.width = scW * sdpr; sc.height = scH * sdpr;
+    sc.style.height = `${scH}px`;
     sctx.setTransform(sdpr, 0, 0, sdpr, 0, 0);
   };
   sizeSparkCanvas();
@@ -526,6 +563,7 @@
 
   // Trail dust stays roughly where it was dropped (slow float), burst dust flies outwards
   function addSpark(x, y, speed = 0) {
+    if (sparks.length >= MAX_SPARKS) return;
     const ang = Math.random() * Math.PI * 2;
     const v = speed * (0.4 + Math.random() * 0.6);
     sparks.push({
@@ -564,32 +602,33 @@
   }
 
   function drawSparks() {
-    sctx.clearRect(0, 0, innerWidth, innerHeight);
+    sctx.clearRect(0, 0, scW, scH);
     sparks = sparks.filter(s => s.life > 0);
-    sctx.shadowColor = "rgba(241, 242, 233, .85)";
     for (const s of sparks) {
       s.life -= s.decay;
       const a = Math.max(s.life, 0);
       if (s.ring) {
         s.r += s.vr; s.vr *= 0.96;
-        sctx.globalAlpha = a * 0.7;
-        sctx.shadowBlur = 12 * a;
+        const lw = 0.4 + 1.6 * a;
         sctx.strokeStyle = "#E0E0D1";
-        sctx.lineWidth = 0.4 + 1.6 * a;
-        sctx.beginPath(); sctx.arc(s.x, s.y, s.r, 0, Math.PI * 2); sctx.stroke();
+        sctx.beginPath(); sctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+        // halo: two wide faint strokes under the line stand in for a shadow blur
+        sctx.globalAlpha = a * 0.7 * 0.12; sctx.lineWidth = lw + 16 * a; sctx.stroke();
+        sctx.globalAlpha = a * 0.7 * 0.22; sctx.lineWidth = lw + 7 * a; sctx.stroke();
+        sctx.globalAlpha = a * 0.7; sctx.lineWidth = lw; sctx.stroke();
         continue;
       }
       s.x += s.vx; s.y += s.vy; s.vy = s.vy * 0.95 - 0.004; s.vx *= 0.95;
-      sctx.globalAlpha = a;
-      sctx.shadowBlur = 6 * a;
-      sctx.fillStyle = s.star ? "#F1F2E9" : "#E0E0D1";
       const r = s.size * (0.45 + 0.55 * a);          // shrink as it fades
+      const gr = r + 7 * a;                           // glow radius
+      sctx.globalAlpha = a;
+      sctx.drawImage(glowSprite, s.x - gr, s.y - gr, gr * 2, gr * 2);
+      sctx.fillStyle = s.star ? "#F1F2E9" : "#E0E0D1";
       if (s.star) drawStar(s.x, s.y, r);
       else { sctx.beginPath(); sctx.arc(s.x, s.y, r, 0, Math.PI * 2); sctx.fill(); }
     }
-    sctx.shadowBlur = 0;
     if (sparks.length) requestAnimationFrame(drawSparks);
-    else { sparkLoop = false; sctx.clearRect(0, 0, innerWidth, innerHeight); }
+    else { sparkLoop = false; sctx.clearRect(0, 0, scW, scH); }
   }
 
   if (!reduceMotion) {
@@ -732,16 +771,22 @@
     const range = document.createRange();
     range.selectNodeContents(title);
     const b = range.getBoundingClientRect();       // the words themselves, not the full-width block
-    const steps = 28, duration = 700;
-    for (let i = 0; i <= steps; i++) {
-      setTimeout(() => {
-        const t = i / steps;
+    // the arc is traced in one rAF loop, in step with the screen (not 29 separate timers)
+    const steps = 28, duration = 700, perStep = 3;
+    let done = -1, t0 = null;
+    const trace = now => {
+      if (t0 === null) t0 = now;
+      const upTo = Math.min(steps, Math.floor(((now - t0) / duration) * steps));
+      while (done < upTo) {
+        const i = ++done, t = i / steps;
         const x = b.left + t * b.width;
         const y = b.top + b.height * 0.45 - Math.sin(t * Math.PI) * (b.height * 0.55 + 14);
-        for (let k = 0; k < 3; k++) addSpark(x, y, 0.9);
+        for (let k = 0; k < perStep; k++) addSpark(x, y, 0.9);
         if (i === steps) { burst(x, y, 26); castRing(x, y, 1.3); }
-      }, (i / steps) * duration);
-    }
+      }
+      if (done < steps) requestAnimationFrame(trace);
+    };
+    requestAnimationFrame(trace);
   }
   document.querySelectorAll(".title, .hero__title").forEach(title => {
     title.addEventListener("click", () => enchantTitle(title));
@@ -800,13 +845,15 @@
       const a = (t / LOOP) * 2 * Math.PI;
       return [0.5 + 0.42 * Math.sin(3 * a), 0.5 + 0.37 * Math.sin(2 * a + Math.PI / 4)];
     };
-    let running = false, start = null, frame = 0;
+    let running = false, start = null, frame = 0, w = 0, h = 0;
+    // size read only when it changes (not every frame)
+    new ResizeObserver(() => { w = el.clientWidth; h = el.clientHeight; }).observe(el);
 
     const tick = now => {
       if (!running) return;
       if (start === null) start = now;
       const t = (now - start) / 1000;
-      const w = el.clientWidth, h = el.clientHeight;
+      if (!w) { w = el.clientWidth; h = el.clientHeight; }
       const R = Math.max(36, w * 0.13) * Math.min(t / 0.8, 1);   // grows in at the start
       const circles = [];
       for (let i = 0; i < TRAIL; i++) {
@@ -855,6 +902,15 @@
       cloudObserver.observe(section);
     });
   }
+
+  /* ---------------------------------------------------------
+     Looping decorations pause while out of view (hero, cauldron, wand, moving painting, leaflet
+     wand glow, hovered buttons) — CSS .is-offscreen sets animation-play-state: paused
+     --------------------------------------------------------- */
+  const pauseObserver = new IntersectionObserver(entries => entries.forEach(entry =>
+    entry.target.classList.toggle("is-offscreen", !entry.isIntersecting)), { rootMargin: "100px 0px" });
+  document.querySelectorAll(".hero, .about__cauldron, .res-wand, .duo__photo--alive, .unveil__wand, .btn")
+    .forEach(el => pauseObserver.observe(el));
 
   /* ---------------------------------------------------------
      Init

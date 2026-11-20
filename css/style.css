@@ -44,7 +44,8 @@ body {
   overflow-x: hidden;
 }
 
-img { display: block; max-width: 100%; }
+/* height:auto keeps the width/height attributes (which reserve space while loading) from stretching images */
+img { display: block; max-width: 100%; height: auto; }
 a { color: inherit; text-decoration: none; }
 ul { list-style: none; margin: 0; padding: 0; }
 figure { margin: 0; }
@@ -246,7 +247,9 @@ figure { margin: 0; }
 .nav__links a:hover::after, .nav__links a.is-active::after { transform: scaleX(1); }
 
 .nav__lang {
+  display: inline-block;
   padding: 7px 13px;
+  text-decoration: none;
   font: 500 .8125rem/1.2 var(--f-ui);
   letter-spacing: .1em;
   color: var(--c-accent);
@@ -1238,9 +1241,10 @@ a.feature:hover, a.feature:focus-visible {
   letter-spacing: .1em;
   color: var(--c-text-muted);
 }
-.branch__email { margin: 10px 0 0; font-size: 1.0625rem; }
-.branch__email a { color: var(--c-paper); overflow-wrap: anywhere; transition: color .3s; }
-.branch__email a:hover { color: var(--c-accent-hi); }
+.branch__address { margin: 10px 0 0; font-size: 1.0625rem; font-style: normal; }
+.branch__email { margin: 4px 0 0; font-size: 1.0625rem; }
+.branch__address a, .branch__email a { color: var(--c-paper); overflow-wrap: anywhere; transition: color .3s; }
+.branch__address a:hover, .branch__email a:hover { color: var(--c-accent-hi); }
 
 .divider {
   position: relative;

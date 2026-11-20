@@ -8,127 +8,91 @@
   const finePointer = window.matchMedia("(pointer: fine)").matches;
 
   /* ---------------------------------------------------------
-     Content: static strings (EN). CZ is read from the HTML.
+     Language switch: CZ (/) ⇄ EN (/en/) in place, without a reload.
+     en/index.html is generated from index.html (tools/build-en.mjs), so both pages share one structure:
+     the other page is fetched (already on hover/touch), its texts are copied into this one and the
+     address is swapped with history.replaceState — the visitor stays where they were.
+     The switch is a real link, so search engines still see both pages; if anything fails it just navigates.
      --------------------------------------------------------- */
-  const EN = {
-    "nav.about": "About", "nav.branches": "Contact", "nav.reservation": "Booking",
-    "nav.decor": "Decorations", "nav.leaflet": "Magic menu", "nav.unique": "What makes us different", "nav.faq": "FAQ",
-    "hero.line1": "Čarokavárna –", "hero.line2": "a place where magic comes alive and dreams come true.", "hero.tag": "Brno, a magical place", "hero.cta": "Enter the world of magic",
-    "about.title1": "We're not just a café.",
-    "about.title": "We're a small escape<br>from the hectic world.",
-    "about.p1": "A place that awakens our inner child. Come take a break from the everyday rush and step into the world of spells and magic.",
-    "about.p2": "Here you can leave your worries at the door and rediscover the honest joy and imagination of childhood.",
-    "about.p3": "At Čarokavárna we believe you're never too old for magic. So we created a place where, at least for a moment, you can return to your childhood, let our enchanting atmosphere carry you away and enjoy moments you'll remember with a smile.",
-    "chip.interior": "Interior", "chip.decor": "Decorations",
-    "decor.title1": "Unique decorations", "decor.title2": "you won't find anywhere else.",
-    "decor.p1": "At Čarokavárna we take pride in originality and uniqueness. Our decorations aren't just ordinary interior accessories. They are one-of-a-kind custom-made pieces, with attention to every detail. Many of them are even life-sized, so you can enjoy the magical world quite literally within arm's reach.",
-    "decor.p2": "We keep improving Čarokavárna and taking it further. Since it opened, the interior has gone through a big transformation and has gradually filled up with all kinds of decorations, each with its own soul and story.",
-    "leaflet.title1": "A wizard's menu", "leaflet.title2": "you conjure up yourself.",
-    "leaflet.p1": "Here at Čarokavárna we can turn ordinary things into something extraordinary.",
-    "leaflet.p2": "That's why you won't get just any old menu. Ours is magical, and it carefully guards its contents from the eyes of all muggles.",
-    "leaflet.p3": "A true wizard has to conjure up their own menu! Just take our special magic wand in your hand and reveal the secrets hidden on its pages.",
-    "leaflet.p4": "And believe us — truly anyone can master this spell! ✨",
-    "chip.leaflet": "Magic menu", "chip.cakes": "Magical desserts", "chip.potions": "Potions & elixirs", "chip.rental": "To borrow", "chip.special": "Also worth a mention", "chip.unique": "What makes us different?", "chip.winter": "Winter menu", "chip.faq": "FAQ",
-    "faq.title1": "Frequently asked", "faq.title2": "questions",
-    "faq.q1": "Can children come too?",
-    "faq.a1": "<p>Of course! ❤️ Čarokavárna is open to little and grown-up wizards alike, and there's no age limit. You're welcome to come with a pram, too.</p>",
-    "faq.q2": "Can I buy a gift voucher?",
-    "faq.a2": "<p>Yes! At Čarokavárna we offer gift vouchers worth 500 CZK and 1,000 CZK, depending on current availability.</p><p>Vouchers can only be bought in person, right at Čarokavárna. Unfortunately, we don't sell or send vouchers online.</p>",
-    "faq.q3": "Are dogs allowed?",
-    "faq.a3": "<p>Unfortunately not. Dogs aren't allowed anywhere in the arcade where Čarokavárna is located. Thank you for understanding.</p>",
-    "faq.q4": "Are the wizard cloaks and other props free to borrow?",
-    "faq.a4": "<p>Yes! All the props we lend out are completely free. Whether it's wizard cloaks, hats, masks, wands or board games, you can try everything during your visit at no charge.</p>",
-    "faq.q5": "Is there an entrance fee?",
-    "faq.a5": "<p>No, there's no entrance fee. You only pay for what you order.</p>",
-    "faq.q6": "Do I need a reservation?",
-    "faq.a6": "<p>On weekends, public holidays and during school holidays we strongly recommend booking, as we're often full.</p><p>On weekdays outside holidays you usually don't need a reservation, but if you want to be sure of a table, we recommend booking one.</p>",
-    "faq.q7": "Can we come without a reservation?",
-    "faq.a7": "<p>Of course! We keep four tables reserved for guests without a booking.</p><p>On weekends, public holidays and during school holidays they may all be taken, though. In that case, just wait a little while until one frees up.</p><p>On weekdays outside holidays you'll usually get in without a reservation and without waiting.</p>",
-    "faq.q8": "How long can I book a table for?",
-    "faq.a8": "<p>A standard reservation lasts one hour. If you'd like to enjoy the magical atmosphere longer, you can also book the next time slot.</p>",
-    "faq.q9": "Do you have gluten-free and lactose-free desserts?",
-    "faq.a9": "<p>Yes, we do! Fresh gluten-free and lactose-free desserts are delivered every Tuesday, Wednesday and Friday.</p><p>Sometimes a few are left for the following day, but on those days you can be most sure to find them.</p>",
-    "faq.q10": "Do you decorate tables for birthdays?",
-    "faq.a10": "<p>Unfortunately, we can't provide birthday table decorations due to capacity reasons.</p><p>But we're happy to make your birthday a little more special! We can put a birthday candle in a dessert of your choice and light it for you.</p>",
-    "winter.badge": "Seasonal offer · limited time only",
-    "winter.title1": "Even winter at Čarokavárna", "winter.title2": "has its magic! 🧣",
-    "winter.p1": "We've prepared a special selection of winter drinks to warm you up, cheer you up and make the cold days more pleasant.",
-    "winter.p2": "We'll give you a little taste in the photos — but what our winter specials really hide? That you'll have to come and discover yourself!",
-    "unique.title1": "What makes Čarokavárna", "unique.title2": "special?",
-    "unique.p1": "At Čarokavárna we take pride in originality, unique details and above all in experiences you won't find just anywhere. So what makes us special?",
-    "unique.f1.title": "A wizard's menu", "unique.f1.text": "Forget ordinary drinks menus! Here you have to conjure up your menu yourself.",
-    "unique.f2.title": "Unique decorations", "unique.f2.text": "Original custom-made decorations, many of them life-sized. Each one has its own soul and story.",
-    "unique.f3.title": "A sugar cloud that sweetens your coffee", "unique.f3.text": "Our Čarokavárna special! Café lungo with a little sugar cloud that melts in the rising steam and rains sweetly right into your cup.",
-    "unique.f4.title": "Wizard props and masks", "unique.f4.text": "Here you can become a part of the magical world! Borrow cloaks, hats, wands or original masks and have a bit of fun.",
-    "unique.f5.title": "Something new every time", "unique.f5.text": "We keep improving Čarokavárna, adding new decorations and coming up with more ideas. So every visit you can discover something new.",
-    "special.title1": "Čarokavárna special –", "special.title2": "a sugar cloud that sweetens your coffee ☁️",
-    "special.p1": "Café lungo with a fluffy cotton-candy cloud that slowly melts in the steam rising from the hot coffee and starts to rain sweetly into your cup.",
-    "paintings.title": "Magic paintings 🪄",
-    "paintings.p1": "Hardly anyone notices at first glance. But did you know the paintings behind our bar aren't entirely ordinary?",
-    "paintings.p2": "Look closely, and you'll find that they move.",
-    "chest.title":"The magic chest 🗝️",
-    "chest.p1": "Dare to solve our enchanted riddle? If you manage it, the treasure from the magic chest could be yours!",
-    "chest.p2": "And don't worry, our treasures aren't just for little wizards. Kids and grown-ups alike will find something for themselves.",
-    "special.p2":"A coffee experience you'll only find here!",
-    "rental.title1": "You won't", "rental.title2": "get bored here…",
-    "rental.p1": "To make your Čarokavárna experience even more intense, you can borrow our wizard cloaks, hats, wands or themed glasses.",
-    "rental.p2": "And if you're up for a bit of fun, you can play board games or fool around in our original masks, which you can borrow in our photo corner by the platform.",
-    "potions.title1": "Enchanting potions", "potions.title2": "for young and grown-up wizards.",
-    "potions.p1": "We serve our potions in original themed glasses with a smoking effect. Every potion has its own unique glass that completes the whole magical experience.",
-    "potions.p2": "You'll find both alcoholic and non-alcoholic potions that will enchant you from the very first sip.",
-    "lemonade.title1": "And we have lemonades", "lemonade.title2": "from the magic forest, too.",
-    "lemonade.p1": "We make our homemade lemonades ourselves from fresh fruit.",
-    "potions.p3":"We change our selection regularly, so after the New Year you can look forward to new and exciting additions.",
-    "cakes.title1": "Magic desserts", "cakes.title2": "that delight more than just your eyes…",
-    "cakes.p1": "At Čarokavárna we take pride in a varied selection of original, themed treats that will enchant you not only with their looks but with their taste too.",
-    "cakes.p2": "We change our selection regularly, so every visit you can discover and taste something new.",
-    "cakes.p3": "And our selection also includes gluten-free and lactose-free desserts. 🌿",
-    "cakes.p4": "Here is a small sample of our magical treats. ✨",
-    "leaflet.hint": "Follow the magic wand, which reveals what the naked eye cannot see.",
-    "leaflet.hintWand": "Follow the magic wand — it reveals what the menu hides.",
-    "branches.title": "Where to find us",
-    "branches.brnoArea": "Brno city centre – ground floor of the EPNE arcade", "branches.map": "Show on map →",
-    "days.tueSun": "Tue – Sun", "days.mon": "Monday", "days.closed": "Closed",
-    "res.title": "Booking",
-    "res.text": "Book your table easily through our CRM Cloud Cash reservation system. A few clicks and the spot is yours.",
-    "res.book": "Book a table", "res.note": "Bookings are managed via CRM Cloud Cash",
-    "ig.follow": "Follow us on Instagram →",
-    "footer.made": "Made with magic",
-    "stamp.l1": "Only", "stamp.l2": "here",
-    "legal.operator": "Operator", "legal.ico": "Company ID", "legal.register": "Registered under file no. C 137923 at the Regional Court in Brno",
-  };
+  const langLink = document.querySelector(".nav__lang");
+  // taken before any other code adds elements, so it lines up 1:1 with the same list in the other page
+  const attrEls = [...document.querySelectorAll("[alt],[aria-label],[title]")];
+  const pages = {};
+  const fetchPage = url => (pages[url] ||= fetch(url)
+    .then(r => { if (!r.ok) throw new Error(r.status); return r.text(); })
+    .then(html => new DOMParser().parseFromString(html, "text/html"))
+    .catch(err => { delete pages[url]; throw err; }));
 
-  /* ---------------------------------------------------------
-     i18n
-     --------------------------------------------------------- */
-  const CS = {};
-  document.querySelectorAll("[data-i18n]").forEach(el => { CS[el.dataset.i18n] = el.textContent; });
-  document.querySelectorAll("[data-i18n-html]").forEach(el => { CS[el.dataset.i18nHtml] = el.innerHTML; });
-
-  let lang = "cs";
-  try { if (localStorage.getItem("lang") === "en") lang = "en"; } catch (e) { /* storage unavailable */ }
-
-  const pick = v => (typeof v === "string" ? v : v[lang]);
-
-  function applyLang() {
-    const dict = lang === "en" ? EN : CS;
-    document.documentElement.lang = lang;
-    document.querySelectorAll("[data-i18n]").forEach(el => {
-      const v = dict[el.dataset.i18n];
-      if (v != null) el.textContent = v;
+  // Relative URLs (images not loaded yet, video posters, links) would resolve against the new address
+  // once it changes, so pin them to absolute ones first (icons in <head> too — browsers re-read them).
+  // Stylesheets and scripts are left alone: already loaded, and touching a stylesheet's href reloads it.
+  function pinRelativeUrls() {
+    document.querySelectorAll("[src], [href], [data-poster], [poster]").forEach(el => {
+      if (el.tagName === "SCRIPT" || el.matches('link[rel~="stylesheet"]')) return;
+      for (const a of ["src", "href", "data-poster", "poster"]) {
+        const v = el.getAttribute(a);
+        if (!v || /^(#|\/|[a-z][a-z\d+.-]*:)/i.test(v)) continue;
+        if (a === "src" && el.tagName === "VIDEO" && el.readyState > 0) continue;   // re-setting src would restart it
+        el.setAttribute(a, new URL(v, document.baseURI).href);
+      }
     });
-    document.querySelectorAll("[data-i18n-html]").forEach(el => {
-      const v = dict[el.dataset.i18nHtml];
-      if (v != null) el.innerHTML = v;
-    });
-    document.querySelectorAll("[data-lang-toggle]").forEach(b => { b.textContent = lang === "en" ? "CZ" : "EN"; });
   }
 
-  document.querySelectorAll("[data-lang-toggle]").forEach(btn => btn.addEventListener("click", () => {
-    lang = lang === "en" ? "cs" : "en";
-    try { localStorage.setItem("lang", lang); } catch (e) { /* storage unavailable */ }
-    applyLang();
-  }));
+  async function switchLanguage(e) {
+    if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;   // new tab etc.: plain link
+    e.preventDefault();
+    const target = langLink.href;
+    let doc;
+    try { doc = await fetchPage(target); } catch { location.href = target; return; }
+    const from = location.href.replace(/#.*$/, "");
+
+    // keep whatever is at the top of the screen in place, even if the texts change length
+    const navH = document.querySelector(".nav")?.offsetHeight || 0;
+    let anchor = document.elementFromPoint(innerWidth / 2, navH + 8);
+    anchor = anchor?.closest("[data-i18n], [data-i18n-html]") || anchor;
+    const before = anchor?.getBoundingClientRect().top;
+
+    pinRelativeUrls();
+    history.replaceState(history.state, "", target + location.hash);
+
+    const texts = {};
+    doc.querySelectorAll("[data-i18n]").forEach(el => { texts[el.dataset.i18n] ??= el.textContent; });
+    doc.querySelectorAll("[data-i18n-html]").forEach(el => { texts["html:" + el.dataset.i18nHtml] ??= el.innerHTML; });
+    document.querySelectorAll("[data-i18n]").forEach(el => {
+      const v = texts[el.dataset.i18n]; if (v != null) el.textContent = v;
+    });
+    document.querySelectorAll("[data-i18n-html]").forEach(el => {
+      const v = texts["html:" + el.dataset.i18nHtml]; if (v != null) el.innerHTML = v;
+    });
+
+    const otherAttrEls = doc.querySelectorAll("[alt],[aria-label],[title]");
+    if (otherAttrEls.length === attrEls.length) {
+      attrEls.forEach((el, i) => ["alt", "aria-label", "title"].forEach(a => {
+        const v = otherAttrEls[i].getAttribute(a); if (v != null) el.setAttribute(a, v);
+      }));
+    }
+
+    document.documentElement.lang = doc.documentElement.lang;
+    document.title = doc.title;
+    for (const [sel, a] of [['meta[name="description"]', "content"], ['link[rel="canonical"]', "href"]]) {
+      const v = doc.querySelector(sel)?.getAttribute(a);
+      if (v != null) document.querySelector(sel)?.setAttribute(a, v);
+    }
+    const next = doc.querySelector(".nav__lang");
+    langLink.textContent = next.textContent;
+    for (const a of ["hreflang", "lang", "aria-label"]) langLink.setAttribute(a, next.getAttribute(a));
+    langLink.href = from;   // the switch now leads back to the page we came from
+
+    if (anchor?.isConnected && before != null) window.scrollBy(0, anchor.getBoundingClientRect().top - before);
+  }
+
+  if (langLink && "fetch" in window && "DOMParser" in window) {
+    const prefetch = () => { fetchPage(langLink.href).catch(() => {}); };
+    langLink.addEventListener("pointerenter", prefetch);
+    langLink.addEventListener("focus", prefetch);
+    langLink.addEventListener("touchstart", prefetch, { passive: true });
+    langLink.addEventListener("click", switchLanguage);
+  }
 
   /* ---------------------------------------------------------
      Navigation: scrolled state, progress bar, active link, burger
@@ -918,7 +882,6 @@
   // Start at the top on reload (the intro is built for it); #section links still open where they point
   if ("scrollRestoration" in history) history.scrollRestoration = "manual";
   document.querySelectorAll("[data-year]").forEach(el => { el.textContent = new Date().getFullYear(); });
-  applyLang();
   // Wait for webfonts (so layout is final) but never longer than ~0.8 s
   Promise.race([document.fonts ? document.fonts.ready : Promise.resolve(), new Promise(r => setTimeout(r, 800))])
     .then(startIntro);

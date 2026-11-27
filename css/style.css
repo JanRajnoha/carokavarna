@@ -496,13 +496,9 @@ figure { margin: 0; }
 .title.reveal { filter: blur(12px); }
 .title.reveal.is-visible { filter: none; }
 
-/* Clouds: content rises out of a mist bank that parts and dissolves (layers added by JS).
-   Four layers: left + right banks part sideways, a dense middle bank sinks, high wisps drift up. */
+/* The dense edges of the two mirrored layers meet at the center. */
 .section { overflow-x: clip; }   /* drifting clouds must not cause sideways scroll */
-/* Performance: the bank is at most ~one screen tall (only the top of a section is in view when it
-   rises — before, each of the 6 layers spanned the whole, often several-screens-tall section), and the
-   puffs are soft radial gradients without a blur filter (a blurred, moving, section-sized layer is
-   very expensive, especially at a phone's 3× pixel density). */
+/* Keep the bank near one screen tall and use soft gradients without a blur filter. */
 .clouds {
   position: absolute;
   left: -10%; right: -10%; top: 0;
@@ -512,69 +508,25 @@ figure { margin: 0; }
 }
 .cloud {
   position: absolute;
-  inset: 0;
-  transition: transform 3.8s var(--ease), opacity 3.2s var(--ease), visibility 0s 4.5s;
-}
-.cloud--l {
+  left: 0;
+  right: 0;
+  height: 66%;
   background:
-    radial-gradient(ellipse 22% 30% at 8% 80%,  rgb(224 224 209 / .30), transparent 70%),
-    radial-gradient(ellipse 20% 26% at 26% 92%, rgb(224 224 209 / .28), transparent 70%),
-    radial-gradient(ellipse 18% 24% at 40% 74%, rgb(224 224 209 / .24),  transparent 70%),
-    radial-gradient(ellipse 16% 22% at 14% 56%, rgb(224 224 209 / .22), transparent 70%),
-    radial-gradient(ellipse 14% 18% at 32% 46%, rgb(224 224 209 / .18), transparent 70%),
-    radial-gradient(ellipse 12% 16% at 5% 32%,  rgb(224 224 209 / .16), transparent 70%);
+    radial-gradient(ellipse 30% 29% at 15% 76%, rgb(224 224 209 / .3),  transparent 70%),
+    radial-gradient(ellipse 30% 30% at 50% 76%, rgb(224 224 209 / .32), transparent 70%),
+    radial-gradient(ellipse 30% 29% at 85% 76%, rgb(224 224 209 / .3),  transparent 70%),
+    radial-gradient(ellipse 25% 24% at 30% 60%, rgb(224 224 209 / .22), transparent 70%),
+    radial-gradient(ellipse 25% 23% at 72% 63%, rgb(224 224 209 / .20), transparent 70%),
+    radial-gradient(ellipse 22% 21% at 15% 43%, rgb(224 224 209 / .12), transparent 70%),
+    radial-gradient(ellipse 44% 24% at 50% 36%, rgb(224 224 209 / .10), transparent 70%),
+    radial-gradient(ellipse 22% 20% at 84% 47%, rgb(224 224 209 / .12), transparent 70%);
+  transition: transform 4.2s var(--ease), opacity 3.6s var(--ease), visibility 0s 4.8s;
 }
-.cloud--r {
-  background:
-    radial-gradient(ellipse 22% 30% at 92% 80%, rgb(224 224 209 / .30), transparent 70%),
-    radial-gradient(ellipse 20% 26% at 74% 92%, rgb(224 224 209 / .28), transparent 70%),
-    radial-gradient(ellipse 18% 24% at 60% 74%, rgb(224 224 209 / .24),  transparent 70%),
-    radial-gradient(ellipse 16% 22% at 86% 56%, rgb(224 224 209 / .22), transparent 70%),
-    radial-gradient(ellipse 14% 18% at 68% 46%, rgb(224 224 209 / .18), transparent 70%),
-    radial-gradient(ellipse 12% 16% at 95% 32%, rgb(224 224 209 / .16), transparent 70%);
-}
-.cloud--c {
-  background:
-    radial-gradient(ellipse 26% 26% at 50% 92%, rgb(224 224 209 / .30), transparent 70%),
-    radial-gradient(ellipse 20% 22% at 38% 80%, rgb(224 224 209 / .24),  transparent 70%),
-    radial-gradient(ellipse 20% 22% at 62% 80%, rgb(224 224 209 / .24),  transparent 70%),
-    radial-gradient(ellipse 18% 20% at 50% 64%, rgb(224 224 209 / .20), transparent 70%),
-    radial-gradient(ellipse 14% 16% at 44% 46%, rgb(224 224 209 / .16), transparent 70%);
-}
-.cloud--high {
-  transition: transform 3s var(--ease), opacity 2.4s var(--ease), visibility 0s 3.5s;
-  background:
-    radial-gradient(ellipse 24% 6% at 22% 22%, rgb(224 224 209 / .13), transparent 70%),
-    radial-gradient(ellipse 20% 5% at 70% 14%, rgb(224 224 209 / .11), transparent 70%),
-    radial-gradient(ellipse 18% 5% at 48% 34%, rgb(224 224 209 / .1),  transparent 70%),
-    radial-gradient(ellipse 16% 4% at 86% 38%, rgb(224 224 209 / .09), transparent 70%),
-    radial-gradient(ellipse 14% 4% at 12% 8%,  rgb(224 224 209 / .08), transparent 70%);
-}
-.cloud--floor {                 /* thick fog floor along the bottom */
-  background:
-    radial-gradient(ellipse 30% 22% at 15% 100%, rgb(224 224 209 / .3),  transparent 70%),
-    radial-gradient(ellipse 30% 22% at 50% 100%, rgb(224 224 209 / .32), transparent 70%),
-    radial-gradient(ellipse 30% 22% at 85% 100%, rgb(224 224 209 / .3),  transparent 70%),
-    radial-gradient(ellipse 24% 18% at 32% 88%,  rgb(224 224 209 / .22), transparent 70%),
-    radial-gradient(ellipse 24% 18% at 68% 88%,  rgb(224 224 209 / .22), transparent 70%);
-}
-.cloud--mid {                   /* scattered puffs through the middle and top */
-  background:
-    radial-gradient(ellipse 12% 12% at 20% 30%, rgb(224 224 209 / .15), transparent 70%),
-    radial-gradient(ellipse 10% 10% at 58% 22%, rgb(224 224 209 / .13), transparent 70%),
-    radial-gradient(ellipse 12% 11% at 80% 60%, rgb(224 224 209 / .16), transparent 70%),
-    radial-gradient(ellipse 11% 10% at 36% 62%, rgb(224 224 209 / .15), transparent 70%),
-    radial-gradient(ellipse 9% 9% at 66% 40%,   rgb(224 224 209 / .13), transparent 70%),
-    radial-gradient(ellipse 10% 9% at 8% 70%,   rgb(224 224 209 / .14), transparent 70%),
-    radial-gradient(ellipse 9% 8% at 92% 20%,   rgb(224 224 209 / .11), transparent 70%);
-}
+.cloud--top { top: 0; transform: translateY(0) scale(1) scaleY(-1) rotate(180deg); }
+.cloud--bottom { bottom: 0; transform: translateY(0) scale(1) rotate(180deg); }
 .section.is-risen .cloud { opacity: 0; visibility: hidden; }
-.section.is-risen .cloud--floor { transform: translateY(40%) scale(1.2); }
-.section.is-risen .cloud--mid   { transform: scale(1.5); }
-.section.is-risen .cloud--l    { transform: translate(-35%, 8%) scale(1.25); }
-.section.is-risen .cloud--r    { transform: translate(35%, 8%) scale(1.25); }
-.section.is-risen .cloud--c    { transform: translateY(30%) scale(1.3); transition-duration: 4.2s, 3.6s, 0s; transition-delay: 0s, 0s, 4.8s; }
-.section.is-risen .cloud--high { transform: translate(8%, -25%) scale(1.15); }
+.section.is-risen .cloud--top { transform: translateY(-40%) scale(1.2) scaleY(-1) rotate(180deg); }
+.section.is-risen .cloud--bottom { transform: translateY(40%) scale(1.2) rotate(180deg); }
 
 /* ---------- About ---------- */
 
@@ -1300,6 +1252,10 @@ a.feature:hover, a.feature:focus-visible {
 .section--reservation .title { margin-bottom: 30px; }
 /* column flex so the wand can sit at the end on desktop but under the text on mobile (see order) */
 .section--reservation .container { display: flex; flex-direction: column; }
+.reservation-arrival .reveal {
+  transition-duration: .85s, 1.2s, 1.05s;
+  transition-delay: 0s;
+}
 
 /* ---------- Wand ---------- */
 
@@ -1482,6 +1438,7 @@ a.feature:hover, a.feature:focus-visible {
   }
   .nav__links a { padding: 13px 0; font-size: .9375rem; letter-spacing: .1em; }
   .nav.is-open .nav__links { opacity: 1; visibility: visible; }
+  .anchor-travel .nav:not(.is-open) .nav__links { transition: none; }
   .nav.is-open { background: rgb(7 13 6 / .96); }
 }
 
@@ -1527,6 +1484,10 @@ a.feature:hover, a.feature:focus-visible {
 
 /* Pause repaint-heavy ornaments during a compact-screen swipe. */
 .page-is-scrolling :is(.about__cauldron, .res-wand) svg * { animation-play-state: paused; }
+
+/* Hold the hero effects until a return to the top has landed. */
+.anchor-travel-top .hero, .anchor-travel-top .hero * { animation-play-state: paused; }
+.anchor-travel-top .nav.is-scrolled { backdrop-filter: none; }
 
 @media (prefers-reduced-motion: reduce) {
   *:not(.scroll-progress), *::before, *::after { animation: none !important; transition-duration: .01ms !important; }

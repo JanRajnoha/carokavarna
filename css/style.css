@@ -197,6 +197,10 @@ figure { margin: 0; }
   transform: scaleX(0);
   transform-origin: left;
 }
+@supports (animation-timeline: scroll(root block)) {
+  .scroll-progress { animation: scroll-progress auto linear both; animation-timeline: scroll(root block); }
+  @keyframes scroll-progress { to { transform: scaleX(1); } }
+}
 
 .nav {
   position: fixed;
@@ -1521,8 +1525,11 @@ a.feature:hover, a.feature:focus-visible {
 .is-offscreen, .is-offscreen *, .is-offscreen::before, .is-offscreen::after,
 .is-offscreen *::before, .is-offscreen *::after { animation-play-state: paused !important; }
 
+/* Pause repaint-heavy ornaments during a compact-screen swipe. */
+.page-is-scrolling :is(.about__cauldron, .res-wand) svg * { animation-play-state: paused; }
+
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { animation: none !important; transition-duration: .01ms !important; }
+  *:not(.scroll-progress), *::before, *::after { animation: none !important; transition-duration: .01ms !important; }
   html { scroll-behavior: auto; }
   .reveal, .title.reveal, .reveal--stagger > * { opacity: 1; transform: none; filter: none; }
 }

@@ -5,6 +5,7 @@
   "use strict";
 
   const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const compactEffects = window.matchMedia("(max-width: 900px), (pointer: coarse)");
   const finePointer = window.matchMedia("(pointer: fine)").matches;
 
   /* ---------------------------------------------------------
@@ -101,21 +102,54 @@
   const progress = document.querySelector(".scroll-progress");
   const burger = document.querySelector(".nav__burger");
   const navLinks = [...document.querySelectorAll(".nav__links a")];
+  const nativeProgress = CSS.supports("animation-timeline: scroll(root block)");
 
-  // once per frame at most: scroll events can fire many times per frame, and reading scrollHeight forces layout
+  // Keep the progress read out of the scroll loop on browsers without scroll-driven animations.
   let scrollQueued = false;
+  let scrollRange = 0;
+  let wasInHero = false;
+  let lastPageScroll = -Infinity;
+  let scrollIdleTimer = 0;
   function onScroll() {
     scrollQueued = false;
     const y = window.scrollY;
-    const max = document.documentElement.scrollHeight - window.innerHeight;
     nav.classList.toggle("is-scrolled", y > 40);
-    progress.style.transform = `scaleX(${max > 0 ? y / max : 0})`;
+    if (!nativeProgress) progress.style.transform = `scaleX(${scrollRange > 0 ? Math.min(1, Math.max(0, y / scrollRange)) : 0})`;
     // back in the hero → no section is "current"
-    if (y < window.innerHeight * 0.5) navLinks.forEach(a => a.classList.remove("is-active"));
+    const inHero = y < window.innerHeight * 0.5;
+    if (inHero && !wasInHero) navLinks.forEach(a => a.classList.remove("is-active"));
+    wasInHero = inHero;
+  }
+  function queueScroll() {
+    if (!scrollQueued) { scrollQueued = true; requestAnimationFrame(onScroll); }
+  }
+  function clearScrollingWhenIdle() {
+    const remaining = 180 - (performance.now() - lastPageScroll);
+    if (remaining > 0) {
+      scrollIdleTimer = setTimeout(clearScrollingWhenIdle, remaining);
+      return;
+    }
+    scrollIdleTimer = 0;
+    document.documentElement.classList.remove("page-is-scrolling");
   }
   window.addEventListener("scroll", () => {
-    if (!scrollQueued) { scrollQueued = true; requestAnimationFrame(onScroll); }
+    lastPageScroll = performance.now();
+    if (compactEffects.matches && !reduceMotion && !scrollIdleTimer) {
+      document.documentElement.classList.add("page-is-scrolling");
+      scrollIdleTimer = setTimeout(clearScrollingWhenIdle, 180);
+    }
+    queueScroll();
   }, { passive: true });
+  if (!nativeProgress) {
+    const updateScrollRange = () => {
+      scrollRange = document.documentElement.scrollHeight - window.innerHeight;
+      queueScroll();
+    };
+    const pageSize = new ResizeObserver(updateScrollRange);
+    pageSize.observe(document.body);
+    window.addEventListener("resize", updateScrollRange);
+    updateScrollRange();
+  }
   onScroll();
 
   const sectionObserver = new IntersectionObserver(entries => {
@@ -422,14 +456,53 @@
   }), { rootMargin: "800px" });
   document.querySelectorAll("video[data-poster]").forEach(v => posterObserver.observe(v));
 
-  document.querySelectorAll("video[data-inview-play]").forEach(video => {
-    if (reduceMotion) { video.controls = true; return; }
-    new IntersectionObserver(([entry]) => {
-      // autoplay blocked (e.g. data-saver) → show controls; other rejections are just a play() cut short by pause()
-      if (entry.isIntersecting) video.play().catch(err => { if (err.name === "NotAllowedError") video.controls = true; });
-      else video.pause();
-    }, { threshold: 0.35 }).observe(video);
-  });
+  const videos = [...document.querySelectorAll("video[data-inview-play]")];
+  if (reduceMotion) {
+    videos.forEach(video => { video.controls = true; });
+  } else {
+    const visibleVideos = new Set();
+    const pendingVideos = new Set();
+    let playTimer = 0;
+
+    const startVisibleVideos = () => {
+      playTimer = 0;
+      if (!pendingVideos.size || document.hidden) return;
+      const quietFor = performance.now() - lastPageScroll;
+      if (quietFor < 200) {
+        playTimer = setTimeout(startVisibleVideos, 200 - quietFor);
+        return;
+      }
+      for (const video of pendingVideos) {
+        video.play().catch(err => { if (err.name === "NotAllowedError") video.controls = true; });
+      }
+      pendingVideos.clear();
+    };
+    const scheduleVideo = () => {
+      if (!playTimer && pendingVideos.size && !document.hidden) playTimer = setTimeout(startVisibleVideos, 200);
+    };
+    const videoObserver = new IntersectionObserver(entries => {
+      for (const entry of entries) {
+        const video = entry.target;
+        if (entry.intersectionRatio >= .35) {
+          visibleVideos.add(video);
+          pendingVideos.add(video);
+        } else {
+          visibleVideos.delete(video);
+          pendingVideos.delete(video);
+          video.pause();
+        }
+      }
+      scheduleVideo();
+    }, { threshold: .35 });
+    videos.forEach(video => videoObserver.observe(video));
+    document.addEventListener("visibilitychange", () => {
+      for (const video of visibleVideos) {
+        if (document.hidden) video.pause();
+        pendingVideos.add(video);
+      }
+      scheduleVideo();
+    });
+  }
 
   const closeLightbox = () => lightbox.classList.remove("is-open");
   lightbox.addEventListener("click", closeLightbox);
@@ -441,13 +514,13 @@
   const dust = document.querySelector(".hero__dust");
   if (dust && !reduceMotion) {
     const ctx = dust.getContext("2d");
-    let w, h, dpr, motes = [], running = true;
+    let w, h, dpr, motes = [], running = true, lastDraw = 0;
 
     const resize = () => {
       // iOS fires resize while scrolling (the address bar shows / hides); the hero's size doesn't
       // change then, so don't reallocate the canvas and respawn every mote
       if (dust.clientWidth === w && dust.clientHeight === h) return;
-      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      dpr = Math.min(window.devicePixelRatio || 1, compactEffects.matches ? 1 : 2);
       w = dust.clientWidth; h = dust.clientHeight;
       dust.width = w * dpr; dust.height = h * dpr;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -465,18 +538,21 @@
       a: Math.random() * 0.6 + 0.2,
     });
 
-    const tick = () => {
+    const tick = now => {
       if (!running) return;
+      requestAnimationFrame(tick);
+      if (compactEffects.matches && now - lastDraw < 30) return;
+      const elapsed = lastDraw ? Math.min((now - lastDraw) / 16.67, 3) : 1;
+      lastDraw = now;
       ctx.clearRect(0, 0, w, h);
       for (const m of motes) {
-        m.x += m.vx; m.y += m.vy; m.tw += 0.03;
+        m.x += m.vx * elapsed; m.y += m.vy * elapsed; m.tw += .03 * elapsed;
         if (m.y < -10) Object.assign(m, spawn(false));
         const depth = 0.35 + 0.65 * (m.y / h);
         ctx.globalAlpha = m.a * depth * (0.55 + 0.45 * Math.sin(m.tw));
         ctx.fillStyle = "#E0E0D1";
         ctx.beginPath(); ctx.arc(m.x, m.y, m.r, 0, Math.PI * 2); ctx.fill();
       }
-      requestAnimationFrame(tick);
     };
 
     new IntersectionObserver(([e]) => {
@@ -809,12 +885,15 @@
       const a = (t / LOOP) * 2 * Math.PI;
       return [0.5 + 0.42 * Math.sin(3 * a), 0.5 + 0.37 * Math.sin(2 * a + Math.PI / 4)];
     };
-    let running = false, start = null, frame = 0, w = 0, h = 0;
+    let running = false, start = null, lastDraw = -Infinity, frame = 0, w = 0, h = 0;
     // size read only when it changes (not every frame)
     new ResizeObserver(() => { w = el.clientWidth; h = el.clientHeight; }).observe(el);
 
     const tick = now => {
       if (!running) return;
+      requestAnimationFrame(tick);
+      if (compactEffects.matches && now - lastDraw < 32) return;
+      lastDraw = now;
       if (start === null) start = now;
       const t = (now - start) / 1000;
       if (!w) { w = el.clientWidth; h = el.clientHeight; }
@@ -834,7 +913,6 @@
         const b = el.getBoundingClientRect();
         addSpark(b.left + x * w, b.top + y * h);
       }
-      requestAnimationFrame(tick);
     };
 
     setMask("radial-gradient(transparent, transparent)");   // nothing shows until the wand arrives
@@ -845,25 +923,77 @@
   }
 
 
-  // Sections rise up out of a bank of clouds: each section gets a cloud layer that
-  // parts and dissolves the first time the section scrolls into view
+  // Keep the original cloud layers and fade. Mount them just before they are needed
+  // and release them when they finish or scroll out of view.
   if (!reduceMotion) {
-    const cloudObserver = new IntersectionObserver(entries => {
-      entries.forEach(entry => {
-        if (!entry.isIntersecting) return;
-        const section = entry.target;
-        section.classList.add("is-risen");
-        cloudObserver.unobserve(section);
-        revealBatch([...inView].filter(el => section.contains(el)));
-      });
-    }, { rootMargin: "0px 0px -30% 0px" });
-    document.querySelectorAll("main .section").forEach(section => {
+    const banks = new Map();
+    function removeBank(section) {
+      const bank = banks.get(section);
+      if (!bank) return;
+      cancelAnimationFrame(bank.frame);
+      clearTimeout(bank.timer);
+      bankVisibility.unobserve(bank.element);
+      bank.element.remove();
+      banks.delete(section);
+    }
+
+    function mountBank(section) {
+      if (banks.has(section)) return banks.get(section);
       const clouds = document.createElement("div");
       clouds.className = "clouds";
       clouds.setAttribute("aria-hidden", "true");
       clouds.innerHTML = '<div class="cloud cloud--high"></div><div class="cloud cloud--mid"></div><div class="cloud cloud--l"></div><div class="cloud cloud--c"></div><div class="cloud cloud--r"></div><div class="cloud cloud--floor"></div>';
       section.appendChild(clouds);
+      const bank = { element: clouds, frame: 0, timer: 0 };
+      banks.set(section, bank);
+      return bank;
+    }
+
+    // Drifting layers can extend beyond the 110vh bank: the floor moves down by 50%
+    // of its height and the high wisps can reach 32.5% above it.
+    const cloudExtent = 1.1 * Math.max(window.innerHeight, window.innerWidth);
+    const bankVisibility = new IntersectionObserver(entries => {
+      for (const entry of entries) {
+        if (entry.isIntersecting || !entry.target.isConnected) continue;
+        removeBank(entry.target.parentElement);
+      }
+    }, { rootMargin: `${Math.ceil(cloudExtent * .5)}px 0px ${Math.ceil(cloudExtent * .325)}px` });
+    const prepareBanks = new IntersectionObserver(entries => {
+      for (const entry of entries) {
+        const section = entry.target;
+        if (section.classList.contains("is-risen")) continue;
+        if (entry.isIntersecting) mountBank(section);
+        else if (!banks.get(section)?.frame) removeBank(section);
+      }
+    }, { rootMargin: "160px 0px" });
+
+    const cloudObserver = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (!entry.isIntersecting) return;
+        const section = entry.target;
+        const bank = mountBank(section);
+        prepareBanks.unobserve(section);
+        cloudObserver.unobserve(section);
+        // A fast scroll can prepare and reveal a bank in the same observer batch.
+        // Leave a render frame between insertion and the class change so CSS can fade it.
+        bank.frame = requestAnimationFrame(() => {
+          bank.frame = requestAnimationFrame(() => {
+            bank.frame = 0;
+            bankVisibility.observe(bank.element);
+            bank.timer = setTimeout(() => removeBank(section), 4900);
+            section.classList.add("is-risen");
+            revealBatch([...inView].filter(el => section.contains(el)));
+          });
+        });
+      });
+    }, { rootMargin: "0px 0px -30% 0px" });
+    document.querySelectorAll("main .section").forEach(section => {
+      prepareBanks.observe(section);
       cloudObserver.observe(section);
+    });
+    document.addEventListener("visibilitychange", () => {
+      if (!document.hidden) return;
+      for (const [section, bank] of banks) if (bank.timer) removeBank(section);
     });
   }
 

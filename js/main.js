@@ -101,6 +101,7 @@
   const nav = document.querySelector(".nav");
   const progress = document.querySelector(".scroll-progress");
   const burger = document.querySelector(".nav__burger");
+  const navLogo = document.querySelector(".nav__logo");
   const navLinks = [...document.querySelectorAll(".nav__links a")];
   const nativeProgress = CSS.supports("animation-timeline: scroll(root block)");
 
@@ -171,6 +172,7 @@
     burger.setAttribute("aria-expanded", String(open));
   });
   navLinks.forEach(a => a.addEventListener("click", closeNav));
+  navLogo?.addEventListener("click", closeNav);
 
   /* ---------------------------------------------------------
      Reveal on scroll
@@ -541,6 +543,7 @@
     const tick = now => {
       if (!running) return;
       requestAnimationFrame(tick);
+      if (document.documentElement.classList.contains("anchor-travel-top")) return;
       if (compactEffects.matches && now - lastDraw < 30) return;
       const elapsed = lastDraw ? Math.min((now - lastDraw) / 16.67, 3) : 1;
       lastDraw = now;
@@ -923,18 +926,58 @@
   }
 
 
-  // Keep the original cloud layers and fade. Mount them just before they are needed
-  // and release them when they finish or scroll out of view.
+  // Mount the two cloud layers when needed and release them when they finish or leave the view.
   if (!reduceMotion) {
     const banks = new Map();
+    const sections = [...document.querySelectorAll("main .section")];
+    const reservation = document.getElementById("rezervace");
+    const contact = document.getElementById("kontakt");
+    const page = document.documentElement;
+    const scrollSettleDelay = 160;
+    let anchorTravel = null;
+    let reservationArrival = null;
+    let reservationReturnY = null;
+    let reservationResumeTimer = 0;
+
+    function contactIsWaiting(section) {
+      if (section !== contact) return false;
+      const bank = banks.get(reservation);
+      return bank && (bank.frame || bank.timer);
+    }
+
+    function resumeContactReveal() {
+      if (!contact || anchorTravel || document.hidden || contactIsWaiting(contact)) return;
+      if (!reservationArrival || reservationArrival.goingUp) watchUnrevealedSections([contact]);
+    }
+
+    function shortenReservationFade(bank) {
+      if (!bank?.timer) return;
+      const animations = bank.element.getAnimations?.({ subtree: true }) ?? [];
+      const fade = animations.find(animation =>
+        animation.transitionProperty === "opacity" && animation.effect.target.classList.contains("cloud--bottom"));
+      if (!fade) return;
+      const remaining = fade.effect.getComputedTiming().endTime - (fade.currentTime ?? 0);
+      const rate = remaining / 600;
+      if (rate <= 1) return;
+      // Continue from the current position and opacity instead of starting a new transition.
+      for (const animation of animations) {
+        if (animation.transitionProperty === "opacity" || animation.transitionProperty === "transform") {
+          animation.updatePlaybackRate?.(rate);
+        }
+      }
+    }
+
     function removeBank(section) {
       const bank = banks.get(section);
       if (!bank) return;
+      const releasesContact = section === reservation && contactIsWaiting(contact);
       cancelAnimationFrame(bank.frame);
       clearTimeout(bank.timer);
       bankVisibility.unobserve(bank.element);
       bank.element.remove();
       banks.delete(section);
+      if (section === reservation) reservationReturnY = null;
+      if (releasesContact) resumeContactReveal();
     }
 
     function mountBank(section) {
@@ -942,35 +985,38 @@
       const clouds = document.createElement("div");
       clouds.className = "clouds";
       clouds.setAttribute("aria-hidden", "true");
-      clouds.innerHTML = '<div class="cloud cloud--high"></div><div class="cloud cloud--mid"></div><div class="cloud cloud--l"></div><div class="cloud cloud--c"></div><div class="cloud cloud--r"></div><div class="cloud cloud--floor"></div>';
+      clouds.innerHTML = '<div class="cloud cloud--top"></div><div class="cloud cloud--bottom"></div>';
       section.appendChild(clouds);
       const bank = { element: clouds, frame: 0, timer: 0 };
       banks.set(section, bank);
       return bank;
     }
 
-    // Drifting layers can extend beyond the 110vh bank: the floor moves down by 50%
-    // of its height and the high wisps can reach 32.5% above it.
+    // A layer can drift half of its own height past the bank's edge.
     const cloudExtent = 1.1 * Math.max(window.innerHeight, window.innerWidth);
+    const cloudDrift = Math.ceil(cloudExtent * .33);
     const bankVisibility = new IntersectionObserver(entries => {
       for (const entry of entries) {
         if (entry.isIntersecting || !entry.target.isConnected) continue;
         removeBank(entry.target.parentElement);
       }
-    }, { rootMargin: `${Math.ceil(cloudExtent * .5)}px 0px ${Math.ceil(cloudExtent * .325)}px` });
+    }, { rootMargin: `${cloudDrift}px 0px` });
     const prepareBanks = new IntersectionObserver(entries => {
+      if (anchorTravel) return;
       for (const entry of entries) {
         const section = entry.target;
-        if (section.classList.contains("is-risen")) continue;
+        if (section.classList.contains("is-risen") || contactIsWaiting(section)) continue;
         if (entry.isIntersecting) mountBank(section);
         else if (!banks.get(section)?.frame) removeBank(section);
       }
     }, { rootMargin: "160px 0px" });
 
     const cloudObserver = new IntersectionObserver(entries => {
+      if (anchorTravel) return;
       entries.forEach(entry => {
         if (!entry.isIntersecting) return;
         const section = entry.target;
+        if (contactIsWaiting(section)) return;
         const bank = mountBank(section);
         prepareBanks.unobserve(section);
         cloudObserver.unobserve(section);
@@ -981,18 +1027,175 @@
             bank.frame = 0;
             bankVisibility.observe(bank.element);
             bank.timer = setTimeout(() => removeBank(section), 4900);
+            if (section === reservation) {
+              // Both layers finish fading together.
+              bank.element.addEventListener("transitionend", event => {
+                if (event.propertyName !== "opacity" || !event.target.classList.contains("cloud--bottom")) return;
+                removeBank(section);
+              });
+            }
             section.classList.add("is-risen");
+            if (section === reservation && (bank.shortenOnDeparture || reservationArrival?.goingUp)) shortenReservationFade(bank);
             revealBatch([...inView].filter(el => section.contains(el)));
           });
         });
+        if (section === reservation && contact) {
+          prepareBanks.unobserve(contact);
+          cloudObserver.unobserve(contact);
+          if (!banks.get(contact)?.timer) removeBank(contact);
+        }
       });
     }, { rootMargin: "0px 0px -30% 0px" });
-    document.querySelectorAll("main .section").forEach(section => {
-      prepareBanks.observe(section);
-      cloudObserver.observe(section);
+
+    function watchUnrevealedSections(candidates = sections) {
+      for (const section of candidates) {
+        if (section.classList.contains("is-risen") || contactIsWaiting(section)) continue;
+        prepareBanks.observe(section);
+        cloudObserver.observe(section);
+      }
+    }
+
+    function resumeSectionReveals() {
+      if (reservationArrival === null) return;
+      reservationArrival = null;
+      clearTimeout(reservationResumeTimer);
+      reservationResumeTimer = 0;
+      watchUnrevealedSections();
+    }
+
+    function resumeAfterReservationScroll() {
+      const remaining = scrollSettleDelay - (performance.now() - lastPageScroll);
+      if (remaining > 0) {
+        reservationResumeTimer = setTimeout(resumeAfterReservationScroll, remaining);
+      } else {
+        resumeSectionReveals();
+      }
+    }
+
+    function finishAnchorTravel(arrived = false) {
+      if (!anchorTravel) return;
+      const target = anchorTravel.target;
+      cancelAnimationFrame(anchorTravel.frame);
+      clearTimeout(anchorTravel.timer);
+      page.classList.remove("anchor-travel", "anchor-travel-top");
+      anchorTravel = null;
+      if (arrived && target === reservation) {
+        target.classList.add("reservation-arrival");
+        reservationArrival = { y: window.scrollY, goingUp: false };
+        reservationReturnY = window.scrollY;
+        watchUnrevealedSections([target]);
+      } else {
+        watchUnrevealedSections();
+      }
+    }
+
+    function anchorPosition(target) {
+      const offset = parseFloat(getComputedStyle(page).scrollPaddingTop) || 0;
+      const y = target.getBoundingClientRect().top + window.scrollY - offset;
+      return Math.min(Math.max(0, y), page.scrollHeight - window.innerHeight);
+    }
+
+    function reachedAnchor() {
+      return Math.abs(window.scrollY - anchorPosition(anchorTravel.target)) < 4;
+    }
+
+    function checkAnchorTravel() {
+      if (!anchorTravel) return;
+      const now = performance.now();
+      // Fallback for browsers without scrollend, and for an interrupted native scroll.
+      const atDestination = Math.abs(window.scrollY - anchorTravel.destination) < 1;
+      const quiet = now - Math.max(lastPageScroll, anchorTravel.started) >= 150;
+      const arrived = atDestination || (quiet && reachedAnchor());
+      if (arrived || (quiet && anchorTravel.interrupted) || now - anchorTravel.started >= 3200) {
+        finishAnchorTravel(arrived);
+      } else {
+        anchorTravel.timer = setTimeout(checkAnchorTravel, 100);
+      }
+    }
+
+    // For long trips, animate only the final approach to the destination.
+    // Record a history entry before moving so Back can restore the starting position.
+    document.addEventListener("click", event => {
+      if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey ||
+          event.shiftKey || event.altKey || !(event.target instanceof Element)) return;
+      const link = event.target.closest('a[href^="#"]');
+      if (!link || (link.target && link.target !== "_self") || link.hasAttribute("download")) return;
+      const target = document.getElementById(link.getAttribute("href").slice(1));
+      finishAnchorTravel();
+      resumeSectionReveals();
+      const goingToTop = target?.id === "top";
+      if (!goingToTop && !sections.includes(target)) return;
+      if (Math.abs(target.getBoundingClientRect().top) <= window.innerHeight * 2) return;
+      event.preventDefault();
+      reservationReturnY = null;
+      if (location.hash !== link.hash) {
+        if ("scrollRestoration" in history) history.scrollRestoration = "auto";
+        history.pushState(history.state, "", link.hash);
+      }
+      if (!target.hasAttribute("tabindex")) target.setAttribute("tabindex", "-1");
+      target.focus({ preventScroll: true });
+      const direction = Math.sign(target.getBoundingClientRect().top);
+      const travel = { target, destination: anchorPosition(target), started: performance.now(), interrupted: false, frame: 0, timer: 0 };
+      anchorTravel = travel;
+      prepareBanks.disconnect();
+      cloudObserver.disconnect();
+      for (const [section, bank] of banks) if (!bank.timer) removeBank(section);
+      page.classList.add("anchor-travel");
+      page.classList.toggle("anchor-travel-top", goingToTop);
+      travel.frame = requestAnimationFrame(() => {
+        if (location.hash !== link.hash || travel.interrupted) {
+          finishAnchorTravel();
+          return;
+        }
+        travel.destination = anchorPosition(target);
+        const glide = goingToTop ? Math.min(280, window.innerHeight * .35) : Math.min(480, window.innerHeight * .6);
+        const approach = travel.destination - direction * glide;
+        window.scrollTo({ top: approach, behavior: "instant" });
+        window.scrollTo({ top: travel.destination, behavior: "smooth" });
+        travel.timer = setTimeout(checkAnchorTravel, 180);
+      });
     });
+
+    document.addEventListener("scrollend", event => {
+      if (event.target !== document || !anchorTravel) return;
+      const arrived = reachedAnchor();
+      if (arrived || anchorTravel.interrupted) finishAnchorTravel(arrived);
+    });
+    // Make room for Contact as soon as Reservations' current fade finishes on an upward return.
+    window.addEventListener("scroll", () => {
+      const y = window.scrollY;
+      if (reservationReturnY !== null && y < reservationReturnY - 16) {
+        reservationReturnY = null;
+        if (reservationArrival) reservationArrival.goingUp = true;
+        const bank = banks.get(reservation);
+        if (bank) {
+          bank.shortenOnDeparture = true;
+          shortenReservationFade(bank);
+        }
+        resumeContactReveal();
+      } else if (reservationReturnY !== null) {
+        reservationReturnY = Math.max(reservationReturnY, y);
+      }
+      if (reservationArrival && !reservationResumeTimer && Math.abs(y - reservationArrival.y) > 16) {
+        reservationResumeTimer = setTimeout(resumeAfterReservationScroll, scrollSettleDelay);
+      }
+    }, { passive: true });
+    const interruptTravel = () => { if (anchorTravel) anchorTravel.interrupted = true; };
+    window.addEventListener("wheel", interruptTravel, { passive: true });
+    window.addEventListener("pointerdown", interruptTravel, { passive: true });
+    window.addEventListener("popstate", () => {
+      if (anchorTravel && location.hash !== `#${anchorTravel.target.id}`) finishAnchorTravel();
+      resumeSectionReveals();
+    });
+
+    watchUnrevealedSections();
     document.addEventListener("visibilitychange", () => {
-      if (!document.hidden) return;
+      if (!document.hidden) {
+        resumeContactReveal();
+        return;
+      }
+      finishAnchorTravel();
+      resumeSectionReveals();
       for (const [section, bank] of banks) if (bank.timer) removeBank(section);
     });
   }
